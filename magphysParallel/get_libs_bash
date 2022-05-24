@@ -1,0 +1,22 @@
+#! /usr/bin/env bash
+
+zfile="zlibs.dat"
+#echo "hey"
+#echo zfile
+while read -r ngal z
+#for line in $zfile
+do
+    
+    #printf "$ngal \n"
+    printf "\n $PWD"
+    printf "\n redshift = $z \n"
+    echo $z "70.,0.30,0.70" | xargs -n 1 | $magphys/get_optic_colors
+    echo $z "70.,0.30,0.70" | xargs -n 1 | $magphys/get_infrared_colors
+   
+done < "$zfile"
+
+#$(`awk ' {print $1";"$2}' $file`)
+#do
+#   printf 'testing, inside get_libs_bash, %s' "$line"
+#   set z=`echo $line | awk 'BEGIN {FS=";"} {print $2}'`
+#done
