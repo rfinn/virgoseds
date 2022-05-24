@@ -20,8 +20,8 @@ import sys
 galid = sys.argv[1]
 HOME = os.getenv("HOME")
 # directory where galaxy folders are
-data_dir = '{}/research/Virgo/magphysParallel/output/'.format(HOME)
-code_dir = '{}/software/magphys/'.format(HOME)
+data_dir = f"{HOME}/research/Virgo/magphysParallel/output/"
+code_dir = f"{HOME}/software/magphys/"
 #print(data_dir)
 #print(code_dir)
 
@@ -41,16 +41,14 @@ if os.path.exists('{galid}/{galid}.fit'):
 os.chdir(data_dir+'/'+galid)
 #print(os.getcwd())
 #print('available files: ',glob.glob('*.dat'))
-s = "source {}/.magphys_bashrc".format(code_dir)
-os.system(s)
-s = '{}/make_zgrid'.format(code_dir)
-os.system(s)
+os.system(f"source {code_dir}/.magphys_bashrc")
+os.system(f"{code_dir}/make_zgrid")
 
 # could check to see if lbr files exist
 # and skip this if they do
-os.system('source {}/get_libs_bash'.format(code_dir))
+os.system(f"source {code_dir}/get_libs_bash")
 
-os.system('{}/fit_sed'.format(code_dir))
+os.system(f"{code_dir}/fit_sed")
 os.system('rm *.lbr')
     
 os.chdir(data_dir)
