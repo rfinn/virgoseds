@@ -41,7 +41,7 @@ if os.path.exists(f"{galid}/{galid}.fit"):
 
 os.chdir(data_dir+'/'+galid)
 print(os.getcwd())
-print('available files: ',glob.glob('*.dat'))
+#print('available files: ',glob.glob('*.dat'))
 os.system(f"source {code_dir}/.magphys_bashrc")
 os.system(f"{code_dir}/make_zgrid")
 
