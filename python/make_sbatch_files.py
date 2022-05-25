@@ -71,7 +71,7 @@ def write_output(filename,dirname,submit=False):
         
 
 ###########################################################
-
+cwd = os.getcwd()
 data_dir = f"{HOME}/research/Virgo/magphysParallel/output/"
 dirlist = glob.glob(f"{data_dir}VFID????")
 # reversing list b/c later galaxies are not getting run
@@ -87,11 +87,14 @@ if not os.path.exists(done_dir):
     os.mkdir(done_dir)
 
 # loop through galaxies to see if results exist
+os.chdir(data_dir)
 for vfid in dirlist:
+    vfid = os.path.basename(vfid)
     if os.path.exists(f"{vfid}/{vfid}.fit") & os.path.exists(f"{vfid}/{vfid}.sed"):
         os.rename(f"{vfid}", f"{done_dir}/{vfid}")
         print(f"output exists for {vfid} - moving it to DONE")
 
+os.chdir(cwd)
 # get list of remaining directories
 dirlist = glob.glob(f"{data_dir}VFID????")
 # reversing list b/c later galaxies are not getting run
