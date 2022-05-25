@@ -19,12 +19,27 @@ sys.path.append(HOME+'/github/Virgo/programs/')
 import sedFunctions
 from matplotlib import pyplot as plt
 from datetime import datetime
-plotdir = HOME+'/research/Virgo/magphysParallelGrawp/plots/'
-# this directory contains subdirectory for all the galaxy folders
-magphys_output = HOME+'/research/Virgo/magphys/magphysParallelGrawp/output-2022May24/'
-output_table_dir = HOME+'/research/Virgo/tables-north/v2/'
-makeplots=False
 
+testSample = False
+makeplots=True
+
+
+# this directory contains subdirectory for all the galaxy folders
+
+dateTimeObj = datetime.now()
+myDate = dateTimeObj.strftime("%d-%b-%Y")
+
+
+if testSample:
+    magphys_output = HOME+'/research/Virgo/magphys/magphysParallelGrawp/output-testsample/'
+    output_table_dir = HOME+'/research/Virgo/tables-north/v1/'
+    output_table = output_table_dir+'/vf_v1_magphys_testsample_'+myDate+'.fits'
+    plotdir = HOME+'/research/Virgo/magphysParallelGrawp/plots-testsample/'    
+else:
+    magphys_output = HOME+'/research/Virgo/magphys/magphysParallelGrawp/output-2022May24/'
+    output_table_dir = HOME+'/research/Virgo/tables-north/v2/'
+    output_table = output_table_dir+'/vf_v2_magphys_'+myDate+'.fits'
+    plotdir = HOME+'/research/Virgo/magphysParallelGrawp/plots/'
 effective_wavelengths = np.array([ 0.1516,0.2267,0.48623,0.64606,0.91993,3.40025,4.65201,12.81034,22.37528],'d')
 os.chdir(magphys_output)
 
@@ -96,11 +111,9 @@ vfid_mstar[vfid_numb]=mstars
 tab = Table([VFID,vfid_sfr,vfid_mstar],names=['VFID','logSFR','logMstar'])
 
 
-dateTimeObj = datetime.now()
-myDate = dateTimeObj.strftime("%d-%b-%Y")
 
 
 
-tab.write(output_table_dir+'/vf_v2_magphys_'+myDate+'.fits',format='fits',overwrite=True)
+tab.write(output_table,format='fits',overwrite=True)
 
     
