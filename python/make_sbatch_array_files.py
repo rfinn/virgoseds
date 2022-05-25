@@ -84,6 +84,6 @@ os.chdir(cwd)
 #for d in dirlist:
 for i in range(7):
     # remove full path to directory so just VFID???? is passed in
-    scriptname=f"VFID{i}000"
-    inputfilename=f"Dirs{i}.txt"
+    script_id = f"VFID{i}000"
+    input_file = f"Dirs{i}.txt"
     write_output(script_id,input_file,submit=False)
