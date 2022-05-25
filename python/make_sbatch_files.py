@@ -63,7 +63,7 @@ def write_output(filename,dirname,submit=False):
         stdout,stderr = process.communicate()
         print(stdout.decode())
         print(stderr.decode())
-        pass
+        pause
         
 
 ###########################################################
@@ -80,4 +80,4 @@ for d in dirlist:
 
     # remove full path to directory so just VFID???? is passed in
     gname = os.path.basename(d)
-    write_output(gname,gname,submit=False)
+    write_output(gname,gname,submit=True)
