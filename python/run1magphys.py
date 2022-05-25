@@ -14,7 +14,7 @@ time parallel -j+0 --eta ‘cd {} && python $magphys/run1magphys.py' ::: */
 '''
 import os
 import sys
-#import glob
+import glob
 
 # galaxy to work with
 galid = sys.argv[1]
