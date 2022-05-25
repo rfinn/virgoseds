@@ -54,7 +54,7 @@ def write_output(script_id,input_file,submit=False):
     output += f'LINE=$(sed -n "$SLURM_ARRAY_TASK_ID"p {input_file})'    
     output += f"python {HOME}/github/virgoseds/python/run1magphys.py $LINE\n"
 
-    outfname = f"JOB_{scriptid}.sh"
+    outfname = f"JOB_{script_id}.sh"
     outfile = open(outfname,'w')
     
     outfile.write(output)
@@ -62,7 +62,7 @@ def write_output(script_id,input_file,submit=False):
 
     cmds = ['sbatch', outfname]
     if submit:
-        print(f"Submitting job to process {filename}")
+        print(f"Submitting job to process {input_file}")
         process = subprocess.Popen(cmds, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout,stderr = process.communicate()
         print(stdout.decode())
@@ -84,6 +84,6 @@ os.chdir(cwd)
 #for d in dirlist:
 for i in range(7):
     # remove full path to directory so just VFID???? is passed in
-    scriptname=f"{i}000"
+    scriptname=f"VFID{i}000"
     inputfilename=f"Dirs{i}.txt"
-    write_output(scriptname,inputfilename,submit=False)
+    write_output(script_id,input_file,submit=False)
