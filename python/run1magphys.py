@@ -29,10 +29,10 @@ code_dir = f"{HOME}/software/magphys/"
 os.chdir(data_dir)
 
 # check to see if the 
-if os.path.exists('{galid}/{galid}.fit'):
+if os.path.exists(f"{galid}/{galid}.fit"):
     # exist this script
-    print('output exists for {galid}')
-    print('moving to the next galaxy')
+    print(f"output exists for {galid}")
+    print("moving to the next galaxy")
     # make sure lbr files have been removed
     #os.system('rm *.lbr')
     exit()
