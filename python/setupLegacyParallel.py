@@ -56,7 +56,7 @@ for line in infile:
             # adding this for compatibility with the files that I gave Damien
             # these just have the numeric ID, and also use the V1 catalog names...
             if not t[0].startswith('VFID'):
-                pdir = outdir+replace(pdir,"VFID{:04d}".format(int((t[0]))))
+                pdir = outdir+"VFID{:04d}".format(int((t[0])))
             else:
                 pdir = outdir+t[0]
             if not(os.path.exists(pdir)):
