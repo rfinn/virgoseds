@@ -108,4 +108,4 @@ for d in dirlist:
 
     # remove full path to directory so just VFID???? is passed in
     gname = os.path.basename(d)
-    write_output(gname,gname,submit=False)
+    write_output(gname,gname,submit=True)
