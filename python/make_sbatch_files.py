@@ -49,7 +49,10 @@ def write_output(filename,dirname,submit=False):
     output += "\n"
     output += "# perform calculation\n"
     output += "\n"
-    output += f"python {HOME}/github/virgoseds/python/run1magphys.py {dirname}\n"
+    #output += f"python {HOME}/github/virgoseds/python/run1magphys.py {dirname}\n"
+    # adding test to see if it makes the full number of jobs
+    # this is basically a "hello world!" program
+    output += f"python {HOME}/github/virgoseds/python/grawpTest.py {dirname}\n"
 
     outfname = f"JOB_{filename}.sh"
     outfile = open(outfname,'w')
