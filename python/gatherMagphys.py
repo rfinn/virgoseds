@@ -21,7 +21,7 @@ from matplotlib import pyplot as plt
 from datetime import datetime
 plotdir = HOME+'/research/Virgo/magphysParallelGrawp/plots/'
 # this directory contains subdirectory for all the galaxy folders
-magphys_output = HOME+'/research/Virgo/magphys/magphysParallelGrawp/output-W4-414/'
+magphys_output = HOME+'/research/Virgo/magphys/magphysParallelGrawp/output-2022May24/'
 output_table_dir = HOME+'/research/Virgo/tables-north/v2/'
 makeplots=False
 

@@ -74,8 +74,8 @@ dirlist = glob.glob(f"{data_dir}VFID????")
 dirlist.sort()
 
 # write out files and submit jobs
-#for d in dirlist:
-for d in dirlist[0:5]:
+for d in dirlist:
+#for d in dirlist[0:5]:
     # remove full path to directory so just VFID???? is passed in
     gname = os.path.basename(d)
     write_output(gname,gname,submit=True)
