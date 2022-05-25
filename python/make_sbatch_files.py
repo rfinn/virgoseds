@@ -12,6 +12,7 @@ import os
 import subprocess
 import sys
 import glob
+import time
 
 
 HOME = os.getenv("HOME")
@@ -63,7 +64,7 @@ def write_output(filename,dirname,submit=False):
         stdout,stderr = process.communicate()
         print(stdout.decode())
         print(stderr.decode())
-        pause
+        time.sleep(0.1)
         
 
 ###########################################################
