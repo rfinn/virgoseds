@@ -1,8 +1,24 @@
+#!/usr/bin/env python
+
+'''
 
 
+* run this from the directory where you want all the scripts created, e.g. ~/scripts/
+
+'''
+
+
+import os
+import subprocess
+import sys
+import glob
+
+
+HOME = os.getenv("HOME")
 
 
 def write_output(filename,dirname,submit=False):
+    ''' copying from Matt Bellis '''
     output = ""
     output += "#!/bin/bash"
     output += "\n"
@@ -18,8 +34,7 @@ def write_output(filename,dirname,submit=False):
     output += "#SBATCH -N 1"
     output += "#SBATCH --ntasks=1"
     output += "\n"
-    output += "#Set the time limit for the job - one hour is specified here"
-    output += "\n"
+    output += "#Set the time limit for the job - 10.5 hour is specified here"
     output += "#SBATCH --time=10:30:00"
     output += "\n"
     output += "#SBATCH --cpus-per-task=1"
@@ -33,8 +48,7 @@ def write_output(filename,dirname,submit=False):
     output += "\n"
     output += "# perform calculation"
     output += "\n"
-    output += "\n"
-    output += f"python {HOME}/github/virgosed/python/run1magphys.py {dirname}"
+    output += f"python {HOME}/github/virgoseds/python/run1magphys.py {dirname}"
 
     outfname = f"JOB_{filename}.sh"
     outfile = open(outfname,'w')
@@ -42,6 +56,24 @@ def write_output(filename,dirname,submit=False):
     outfile.write(output)
     outfile.close()
 
+    cmds = ['sbatch', outfname]
     if submit:
+        print(f"Submitting job to process {filename}")
+        process = subprocess.Popen(cmds, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout,stderr = process.communicate()
+        print(stdout.decode())
+        print(stderr.decode())
         pass
         
+
+
+data_dir = f"{HOME}/research/Virgo/magphysParallel/output/"
+dirlist = glob.glob(f"{data_dir}VFID????")
+
+dirlist.sort()
+
+# write out files and submit jobs
+for d in dirlist:
+    # remove full path to directory so just VFID???? is passed in
+    gname = os.path.basename(d)
+    write_output(gname,gname,submit=False)
