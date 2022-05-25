@@ -5,6 +5,10 @@
 * this will split sample into groups of 1000 to meet max limit of arrays
 * run this from the directory where you want all the scripts created, e.g. ~/scripts/
 
+
+* to launch, set submit=True
+
+
 '''
 
 
@@ -55,8 +59,8 @@ def write_output(script_id,input_file,submit=False):
     output += f"python {HOME}/github/virgoseds/python/run1magphys.py $LINE\n"
 
     outfname = f"JOB_{script_id}.sh"
-    outfile = open(outfname,'w')
     
+    outfile = open(outfname,'w')
     outfile.write(output)
     outfile.close()
 
@@ -86,4 +90,4 @@ for i in range(7):
     # remove full path to directory so just VFID???? is passed in
     script_id = f"VFID{i}000"
     input_file = f"Dirs{i}.txt"
-    write_output(script_id,input_file,submit=False)
+    write_output(script_id,input_file,submit=True)
