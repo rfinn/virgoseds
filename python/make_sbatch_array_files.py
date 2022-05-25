@@ -21,7 +21,7 @@ import glob
 HOME = os.getenv("HOME")
 
 
-def write_output(script_id,input_file,submit=False):
+def write_output(script_id,input_file,narray=1000,submit=False):
     ''' copying from Matt Bellis '''
     output = ""
     output += "#!/bin/bash\n"
@@ -35,7 +35,7 @@ def write_output(script_id,input_file,submit=False):
     output += "#SBATCH --partition=normal\n"
     output += "\n"    
     output += "# for testing\n"
-    output += "#SBATCH --array=1-1000\n"
+    output += f"#SBATCH --array=1-{narray}\n"
     output += "\n"
     output += "#Set the number of nodes\n"
     output += "#SBATCH -N 1\n"
@@ -79,8 +79,14 @@ cwd = os.getcwd()
 
 data_dir = f"{HOME}/research/Virgo/magphysParallel/output/"
 os.chdir(data_dir)
+nfiles = []
 for i in range(7):
-    os.system(f"ls -d VFID{i}??? > Dirs{i}.txt")
+    outfile = f"Dirs{i}.txt"
+    os.system(f"ls -d VFID{i}??? > {outfile}")
+    # count lines
+    infile = open(outfile,'r')
+    nfiles.append(len(infile.readlines()))
+    infile.close()
 os.chdir(cwd)
 
 
@@ -90,4 +96,4 @@ for i in range(7):
     # remove full path to directory so just VFID???? is passed in
     script_id = f"VFID{i}000"
     input_file = f"Dirs{i}.txt"
-    write_output(script_id,input_file,submit=True)
+    write_output(script_id,input_file,narray=nfiles[i],submit=True)
