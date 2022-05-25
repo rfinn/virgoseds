@@ -53,9 +53,12 @@ for line in infile:
             nskip += 1
             continue
         else:
-            pdir = outdir+t[0]
-            if not os.path.basename(pdir).startswith('VFID'):
-                pdir = pdir.replace(pdir,"VFID{:04d}".format(int(os.path.basename(pdir))))
+            # adding this for compatibility with the files that I gave Damien
+            # these just have the numeric ID, and also use the V1 catalog names...
+            if not t[0].startswith('VFID'):
+                pdir = outdir+replace(pdir,"VFID{:04d}".format(int((t[0]))))
+            else:
+                pdir = outdir+t[0]
             if not(os.path.exists(pdir)):
                 os.mkdir(pdir)
             outfile = open(pdir+'/observations.dat','w')
