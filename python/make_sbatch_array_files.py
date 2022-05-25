@@ -49,8 +49,9 @@ def write_output(script_id,input_file,submit=False):
     output += "# Move to the directory needed - defaults to the submission directory\n"
     output += "\n"
     output += "# perform calculation\n"
-    output += "\n"
-    output += f'LINE=$(sed -n "$SLURM_ARRAY_TASK_ID"p $HOME/research/Virgo/magphysParallel/output/{input_file})\n'    
+    output += "#\n"
+    output += f'LINE=$(sed -n "$SLURM_ARRAY_TASK_ID"p $HOME/research/Virgo/magphysParallel/output/{input_file})\n'
+    output += "#\n"    
     output += f"python {HOME}/github/virgoseds/python/run1magphys.py $LINE\n"
 
     outfname = f"JOB_{script_id}.sh"
