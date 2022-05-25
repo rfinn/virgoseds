@@ -95,7 +95,7 @@ for d in dirlist:
     # check to see if magphys results exist    
     if os.path.exists(f"{gname}/{gname}.fit") & os.path.exists(f"{gname}/{gname}.sed"):
             #os.rename(f"{vfid}", f"{done_dir}/{vfid}")
-            print(f"output exists for {vfid} - moving to next galaxy")
+            print(f"output exists for {gname} - moving to next galaxy")
             continue
 
     write_output(gname,gname,submit=True)
