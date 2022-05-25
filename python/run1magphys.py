@@ -21,6 +21,7 @@ galid = sys.argv[1]
 HOME = os.getenv("HOME")
 # directory where galaxy folders are
 data_dir = f"{HOME}/research/Virgo/magphysParallel/output/"
+data_dir = os.getcwd()+'/'
 code_dir = f"{HOME}/software/magphys/"
 #print(data_dir)
 #print(code_dir)
