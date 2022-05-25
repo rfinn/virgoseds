@@ -39,8 +39,8 @@ if os.path.exists('{galid}/{galid}.fit'):
 
 
 os.chdir(data_dir+'/'+galid)
-#print(os.getcwd())
-#print('available files: ',glob.glob('*.dat'))
+print(os.getcwd())
+print('available files: ',glob.glob('*.dat'))
 os.system(f"source {code_dir}/.magphys_bashrc")
 os.system(f"{code_dir}/make_zgrid")
 
@@ -48,6 +48,7 @@ os.system(f"{code_dir}/make_zgrid")
 # and skip this if they do
 os.system(f"source {code_dir}/get_libs_bash")
 
+print('running fit_sed')
 os.system(f"{code_dir}/fit_sed")
 os.system('rm *.lbr')
     

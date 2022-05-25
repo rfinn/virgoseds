@@ -72,7 +72,8 @@ def write_output(filename,dirname,submit=False):
 data_dir = f"{HOME}/research/Virgo/magphysParallel/output/"
 dirlist = glob.glob(f"{data_dir}VFID????")
 
-dirlist.sort()
+# reversing list b/c later galaxies are not getting run
+dirlist.sort(reverse=True)
 print('number of jobs to run = {}'.format(len(dirlist)))
 # write out files and submit jobs
 #for d in dirlist[0:5]:
