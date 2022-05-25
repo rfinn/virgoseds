@@ -2,7 +2,7 @@
 
 '''
 
-
+* this will split sample into groups of 1000 to meet max limit of arrays
 * run this from the directory where you want all the scripts created, e.g. ~/scripts/
 
 '''
@@ -17,7 +17,7 @@ import glob
 HOME = os.getenv("HOME")
 
 
-def write_output(filename,dirname,submit=False):
+def write_output(script_id,input_file,submit=False):
     ''' copying from Matt Bellis '''
     output = ""
     output += "#!/bin/bash\n"
@@ -29,7 +29,10 @@ def write_output(filename,dirname,submit=False):
     output += "#SBATCH -o job.out.%j\n"
     output += "\n"
     output += "#SBATCH --partition=normal\n"
-    
+    output += "\n"    
+    output += "# for testing\n"
+    output += "#SBATCH --array=1-1000\n"
+    output += "\n"
     output += "#Set the number of nodes\n"
     output += "#SBATCH -N 1\n"
     output += "#SBATCH --ntasks=1\n"
@@ -48,9 +51,10 @@ def write_output(filename,dirname,submit=False):
     output += "\n"
     output += "# perform calculation\n"
     output += "\n"
-    output += f"python {HOME}/github/virgoseds/python/run1magphys.py {dirname}\n"
+    output += f'LINE=$(sed -n "$SLURM_ARRAY_TASK_ID"p {input_file})'    
+    output += f"python {HOME}/github/virgoseds/python/run1magphys.py $LINE\n"
 
-    outfname = f"JOB_{filename}.sh"
+    outfname = f"JOB_{scriptid}.sh"
     outfile = open(outfname,'w')
     
     outfile.write(output)
@@ -67,15 +71,19 @@ def write_output(filename,dirname,submit=False):
         
 
 ###########################################################
+cwd = os.getcwd()
 
 data_dir = f"{HOME}/research/Virgo/magphysParallel/output/"
-dirlist = glob.glob(f"{data_dir}VFID????")
+os.chdir(data_dir)
+for i in range(7):
+    os.system(f"ls -d VFID{i}??? > Dirs{i}.txt")
+os.chdir(cwd)
 
-dirlist.sort()
 
 # write out files and submit jobs
 #for d in dirlist:
-for d in dirlist[0:5]:
+for i in range(7):
     # remove full path to directory so just VFID???? is passed in
-    gname = os.path.basename(d)
-    write_output(gname,gname,submit=True)
+    scriptname=f"{i}000"
+    inputfilename=f"Dirs{i}.txt"
+    write_output(scriptname,inputfilename,submit=False)
