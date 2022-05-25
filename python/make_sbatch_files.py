@@ -77,4 +77,4 @@ dirlist.sort()
 for d in dirlist[0:5]:
     # remove full path to directory so just VFID???? is passed in
     gname = os.path.basename(d)
-    write_output(gname,gname,submit=False)
+    write_output(gname,gname,submit=True)
