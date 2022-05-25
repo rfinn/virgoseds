@@ -96,4 +96,4 @@ for i in range(7):
     # remove full path to directory so just VFID???? is passed in
     script_id = f"VFID{i}000"
     input_file = f"Dirs{i}.txt"
-    write_output(script_id,input_file,narray=nfiles[i],submit=True)
+    write_output(script_id,input_file,narray=nfiles[i],submit=False)

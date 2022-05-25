@@ -2,4 +2,4 @@
 
 import sys
 
-print(f"hello world {sys.argv[1]!"}
+print(f"hello world {sys.argv[1]!}"}
