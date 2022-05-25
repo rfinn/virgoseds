@@ -77,35 +77,22 @@ dirlist = glob.glob(f"{data_dir}VFID????")
 # reversing list b/c later galaxies are not getting run
 dirlist.sort(reverse=True)
 
-# having trouble getting all the galaxies to run, so I am
-# so I am going to move finished galaxies to a subdirectory called DONE
-done_dir = data_dir+'/DONE/'
 
-# first check to see if directory exists
-if not os.path.exists(done_dir):
-    # make directory if it does not exist
-    os.mkdir(done_dir)
-
-# loop through galaxies to see if results exist
-os.chdir(data_dir)
-for vfid in dirlist:
-    vfid = os.path.basename(vfid)
-    if os.path.exists(f"{vfid}/{vfid}.fit") & os.path.exists(f"{vfid}/{vfid}.sed"):
-        os.rename(f"{vfid}", f"{done_dir}/{vfid}")
-        print(f"output exists for {vfid} - moving it to DONE")
-
-os.chdir(cwd)
-# get list of remaining directories
-dirlist = glob.glob(f"{data_dir}VFID????")
-# reversing list b/c later galaxies are not getting run
-dirlist.sort(reverse=True)
-
-print('number of jobs to run = {}'.format(len(dirlist)))
-# write out files and submit jobs
-
+nrun=0
 #for d in dirlist[0:5]:    
 for d in dirlist:
 
     # remove full path to directory so just VFID???? is passed in
     gname = os.path.basename(d)
+    
+    os.chdir(data_dir)
+    # check to see if magphys results exist    
+    if os.path.exists(f"{gname}/{gname}.fit") & os.path.exists(f"{gname}/{gname}.sed"):
+            #os.rename(f"{vfid}", f"{done_dir}/{vfid}")
+            print(f"output exists for {vfid} - moving to next galaxy")
+            continue
+
     write_output(gname,gname,submit=True)
+    nrun += 1
+print('number of jobs to run = {}'.format(nrun))
+# write out files and submit jobs

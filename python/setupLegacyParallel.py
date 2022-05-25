@@ -54,6 +54,8 @@ for line in infile:
             continue
         else:
             pdir = outdir+t[0]
+            if not pdir.startswith('VFID'):
+                pdir = "VFID{:04d}".format(pdir)
             if not(os.path.exists(pdir)):
                 os.mkdir(pdir)
             outfile = open(pdir+'/observations.dat','w')
