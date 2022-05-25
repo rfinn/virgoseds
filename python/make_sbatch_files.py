@@ -102,10 +102,10 @@ dirlist.sort(reverse=True)
 
 print('number of jobs to run = {}'.format(len(dirlist)))
 # write out files and submit jobs
-#for d in dirlist[0:5]:
 
+#for d in dirlist[0:5]:    
 for d in dirlist:
 
     # remove full path to directory so just VFID???? is passed in
     gname = os.path.basename(d)
-    write_output(gname,gname,submit=True)
+    write_output(gname,gname,submit=False)
