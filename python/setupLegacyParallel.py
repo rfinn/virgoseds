@@ -85,9 +85,13 @@ for line in infile:
             nskip += 1
             continue
         else:
-            pdir = outdir+t[0]
+            if not t[0].startswith('VFID'):
+                pdir = outdir+"VFID{:04d}".format(int((t[0])))
+            else:
+                pdir = outdir+t[0]
             if not(os.path.exists(pdir)):
                 os.mkdir(pdir)
+            
             outfile = open(pdir+'/observations.dat','w')
             outfile.write(header)
             outfile.write(line)
