@@ -34,7 +34,7 @@ if os.path.exists('{galid}/{galid}.fit'):
     print('output exists for {galid}')
     print('moving to the next galaxy')
     # make sure lbr files have been removed
-    os.system('rm *.lbr')
+    #os.system('rm *.lbr')
     exit()
 
 
@@ -50,6 +50,6 @@ os.system(f"source {code_dir}/get_libs_bash")
 
 print('running fit_sed')
 os.system(f"{code_dir}/fit_sed")
-os.system('rm *.lbr')
+#os.system('rm *.lbr')
     
 os.chdir(data_dir)
