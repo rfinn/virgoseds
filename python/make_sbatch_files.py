@@ -3,7 +3,9 @@
 '''
 
 
-* run this from the directory where you want all the scripts created, e.g. ~/scripts/
+* run this from the top level directory, where all the VFIDs are in subdirectories
+* the log files will go in log/
+* the script files will go in the top level directory
 
 '''
 
@@ -27,7 +29,7 @@ def write_output(filename,dirname,submit=False):
     output += "#SBATCH -J job\n"
     output += "\n"
     output += "# Set file to capture standard out and standard error and append the jobID (%j)\n"
-    output += "#SBATCH -o job.out.%j\n"
+    output += "#SBATCH -o logs/job.out.%j\n"
     output += "\n"
     output += "#SBATCH --partition=normal\n"
     
@@ -72,8 +74,12 @@ def write_output(filename,dirname,submit=False):
 
 ###########################################################
 cwd = os.getcwd()
-data_dir = f"{HOME}/research/Virgo/magphysParallel/output/"
-dirlist = glob.glob(f"{data_dir}VFID????")
+#data_dir = f"{HOME}/research/Virgo/magphysParallel/output/"
+#data_dir = f"{HOME}/research/Virgo/magphysParallel/damien_input_files/output/"
+data_dir = os.getcwd()
+if not os.path.exists(data_dir+'/logs'):
+    os.mkdir(data_dir+'/logs')
+dirlist = glob.glob(f"{data_dir}/VFID????")
 # reversing list b/c later galaxies are not getting run
 dirlist.sort(reverse=True)
 
