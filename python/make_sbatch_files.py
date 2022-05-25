@@ -72,10 +72,12 @@ data_dir = f"{HOME}/research/Virgo/magphysParallel/output/"
 dirlist = glob.glob(f"{data_dir}VFID????")
 
 dirlist.sort()
-print('number of jobs to run = {}'.format(len(dirlist))
+print('number of jobs to run = {}'.format(len(dirlist)))
 # write out files and submit jobs
-for d in dirlist:
 #for d in dirlist[0:5]:
+
+for d in dirlist:
+
     # remove full path to directory so just VFID???? is passed in
     gname = os.path.basename(d)
     write_output(gname,gname,submit=False)
