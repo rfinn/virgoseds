@@ -98,7 +98,7 @@ for d in dirlist:
             print(f"output exists for {vfid} - moving to next galaxy")
             continue
 
-    write_output(gname,gname,submit=True)
+    write_output(gname,gname,submit=False)
     nrun += 1
 print('number of jobs to run = {}'.format(nrun))
 # write out files and submit jobs
