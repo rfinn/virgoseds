@@ -20,7 +20,7 @@ import sedFunctions
 from matplotlib import pyplot as plt
 from datetime import datetime
 
-testSample = False
+testSample = True
 makeplots=True
 
 
@@ -34,12 +34,12 @@ if testSample:
     magphys_output = HOME+'/research/Virgo/magphys/magphysParallelGrawp/output-testsample/'
     output_table_dir = HOME+'/research/Virgo/tables-north/v1/'
     output_table = output_table_dir+'/vf_v1_magphys_testsample_'+myDate+'.fits'
-    plotdir = HOME+'/research/Virgo/magphysParallelGrawp/plots-testsample/'    
+    plotdir = HOME+'/research/Virgo/magphys/magphysParallelGrawp/plots-testsample/'    
 else:
     magphys_output = HOME+'/research/Virgo/magphys/magphysParallelGrawp/output-2022May24/'
     output_table_dir = HOME+'/research/Virgo/tables-north/v2/'
     output_table = output_table_dir+'/vf_v2_magphys_'+myDate+'.fits'
-    plotdir = HOME+'/research/Virgo/magphysParallelGrawp/plots/'
+    plotdir = HOME+'/research/Virgo/magphys/magphysParallelGrawp/plots/'
 effective_wavelengths = np.array([ 0.1516,0.2267,0.48623,0.64606,0.91993,3.40025,4.65201,12.81034,22.37528],'d')
 os.chdir(magphys_output)
 
@@ -65,10 +65,13 @@ for d in dirlist:
             s.plot_histograms()
         
             sedplot = '{}-magphys-sed.png'.format(d)
-            histplot = '{}-magphys-pdfs.png'.format(d)        
+            histplot = '{}-magphys-pdfs.png'.format(d)
             os.rename(sedplot,os.path.join(plotdir,sedplot))
             os.rename(histplot,os.path.join(plotdir,histplot)) 
             plt.close('all')
+            sfrs.append(np.log10(s.sfr))
+            mstars.append(np.log10(s.mstar))
+            
         else:
             # gather outputs only
             # this is much faster
@@ -89,11 +92,11 @@ for d in dirlist:
             
 
             # get sfr and mstars
-
-            vfids.append(d)
-            vfid_numb.append(int(d.replace('VFID','')))
             sfrs.append(np.log10(SFR))
             mstars.append(np.log10(mstar))
+
+        vfids.append(d)
+        vfid_numb.append(int(d.replace('VFID','')))
 
         os.chdir(magphys_output)
         

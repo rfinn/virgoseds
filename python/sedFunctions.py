@@ -132,16 +132,17 @@ class magphys_sed():
         self.read_sed_file(self.sed_file,ax1=ax,plot_unattenuated=plot_unattenuated)
         self.read_fit_file(self.fit_file,ax1=ax,ax2=resid_ax)
 
-        ax.set_xlim(.07,100)
+        ax.set_xlim(.07,1500)
         # these are the limits from plot_sed.pro
         # but my y values are offset considerably
         #plt.ylim(7.1,12)
-        ax.set_ylim(7,10.5)                
+        ax.set_ylim(5,15)                
         ax.set_xscale('log')
         ax.tick_params(axis='x',labelbottom=False)
         resid_ax.set_xscale('log')
         resid_ax.set_ylabel('(obs-model)/obs')
         resid_ax.axhline(y=0,ls='--',color='k')
+        resid_ax.set_ylim(-1,1)
         plt.sca(ax)
         resid_ax.set_xlabel(r'$Wavelength \ (\mu m) \ [observed \ frame]$',fontsize=14)
         plt.ylabel(r'$log(\lambda L_\lambda/L_\odot) $',fontsize=14)        
@@ -149,9 +150,9 @@ class magphys_sed():
         s = 'VFID{}: logMstar = {:.2f}, logSFR = {:.2f}'.format(self.galid,np.log10(self.mstar),np.log10(self.sfr))
         plt.title(s.replace('VFIDVFID','VFID'),fontsize=14)
         if self.galid.startswith('VFID'):
-            outfile = '{}-magphys-sed.png'.format(self.galid)
+            outfile = '{}-magphys-sed.png'.format(self.galid.rstrip())
         else:
-            outfile = 'VFID{}-magphys-sed.png'.format(self.galid)
+            outfile = 'VFID{}-magphys-sed.png'.format(self.galid.rstrip())
         
         plt.savefig(outfile)
     def plot_sed_noresidual(self,plot_unattenuated=True):
@@ -181,7 +182,7 @@ class magphys_sed():
         
         s = 'VFID{}: logMstar = {:.2f}, logSFR = {:.2f}'.format(self.galid,np.log10(self.mstar),np.log10(self.sfr))
         #plt.title(s,fontsize=14)
-        outfile = 'VFID{}-magphys-sed-noresidual.png'.format(self.galid)
+        outfile = 'VFID{}-magphys-sed-noresidual.png'.format(self.galid.rstrip())
         
         plt.savefig(outfile)
     def read_sed_file(self,sed_file,ax1=None,plot_unattenuated=True):
@@ -238,12 +239,12 @@ class magphys_sed():
         resid = (10.**L_flux - 10.**L_pflux)/10.**L_flux
         # approximate error...
         resid_err = e_flux*(1+z)*frequency/10.**L_flux
-        ax1.plot(self.lambda_eff,L_flux,'bs',label='VFID '+self.galid)
+        ax1.plot(self.lambda_eff,L_flux,'ko',label='VFID '+self.galid)
         yerr = np.array((L_eflux_lo,L_eflux_hi))
         #print('yerr shape = ',yerr.shape)
         #print(yerr)
         ax1.errorbar(self.lambda_eff,L_flux,yerr=yerr,fmt='None',color='b')        
-        ax1.plot(self.lambda_eff,L_pflux,'k^',label='Predicted')
+        #ax1.plot(self.lambda_eff,L_pflux,'k^',label='Predicted')
         if plotresid:
             ax2.plot(self.lambda_eff,resid,'ko',label='residuals')
             ax2.errorbar(self.lambda_eff,resid,yerr=resid_err,fmt='none',color='k')                
@@ -341,7 +342,7 @@ class magphys_sed():
                 plt.yticks([])
 
         if self.galid.startswith('VFID'):
-            outfile = '{}-magphys-pdfs.png'.format(self.galid)
+            outfile = '{}-magphys-pdfs.png'.format(self.galid.rstrip())
         else:
-            outfile = 'VFID{}-magphys-pdfs.png'.format(self.galid)
+            outfile = 'VFID{}-magphys-pdfs.png'.format(self.galid.rstrip())
         plt.savefig(outfile)
