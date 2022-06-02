@@ -69,7 +69,7 @@ def write_output(filename,dirname,submit=False):
         stdout,stderr = process.communicate()
         print(stdout.decode())
         print(stderr.decode())
-        time.sleep(0.1)
+        #time.sleep(0.1)
         
 
 ###########################################################
