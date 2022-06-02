@@ -43,14 +43,14 @@ os.chdir(data_dir+'/'+galid)
 print(os.getcwd())
 #print('available files: ',glob.glob('*.dat'))
 os.system(f"source {code_dir}/.magphys_bashrc")
-os.system(f"{code_dir}/make_zgrid")
+os.system(f"echo N |xargs -n 1 | {code_dir}/make_zgrid")
 
 # could check to see if lbr files exist
 # and skip this if they do
 os.system(f"source {code_dir}/get_libs_bash")
 
 print('running fit_sed')
-os.system(f"{code_dir}/fit_sed")
+os.system(f"echo 1 | xargs -n 1 |{code_dir}/fit_sed")
 #os.system('rm *.lbr')
     
 os.chdir(data_dir)
