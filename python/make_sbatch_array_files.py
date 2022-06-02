@@ -113,4 +113,4 @@ os.chdir(cwd)
 #for d in dirlist:
 script_id = "VFIDall"
 input_file = "Dirs.txt"
-write_output(script_id,input_file,narray=nfiles,submit=False)
+write_output(script_id,input_file,narray=nfiles,submit=True)
