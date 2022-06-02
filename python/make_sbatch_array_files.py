@@ -32,7 +32,7 @@ def write_output(script_id,input_file,narray=1000,submit=False):
     output += "# Set file to capture standard out and standard error and append the jobID (%j)\n"
     output += "#SBATCH -o job.out.%j\n"
     output += "\n"
-    output += "#SBATCH --partition=normal\n"
+    output += "#SBATCH --partition=high\n"
     output += "\n"    
     output += "# for testing\n"
     output += f"#SBATCH --array=1-{narray}\n"
@@ -79,6 +79,7 @@ cwd = os.getcwd()
 
 data_dir = f"{HOME}/research/Virgo/magphysParallel/output/"
 os.chdir(data_dir)
+'''
 nfiles = []
 for i in range(7):
     outfile = f"Dirs{i}.txt"
@@ -97,3 +98,19 @@ for i in range(7):
     script_id = f"VFID{i}000"
     input_file = f"Dirs{i}.txt"
     write_output(script_id,input_file,narray=nfiles[i],submit=False)
+'''
+
+outfile = "Dirs.txt"
+os.system(f"ls -d ???? > {outfile}")
+# count lines
+infile = open(outfile,'r')
+nfiles = (len(infile.readlines()))
+infile.close()
+os.chdir(cwd)
+
+
+# write out files and submit jobs
+#for d in dirlist:
+script_id = "VFIDall"
+input_file = "Dirs.txt"
+write_output(script_id,input_file,narray=nfiles[i],submit=False)
