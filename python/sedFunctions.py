@@ -329,13 +329,20 @@ class magphys_sed():
         allhist_names = ['fmu_SFR','fmu_IR','mu','tau_V','sSFR','Mstar',\
                    'Ld_tot','Tc_ISM','Tw_BC','xi_C_tot','xi_W_tot',\
                    'tau_V_ISM','Mdust','SFR']
+        xlims = {'fmu_SFR':[0,1],'fmu_IR':[0,1],'mu':[0,1],'tau_V':[0,5],\
+                 'sSFR':[-12,-8],'Mstar':[7,11],\
+                 'Ld_tot':[7,11],'Tc_ISM':[15,25],'Tw_BC':[30,60],\
+                 'xi_C_tot':[0,1],'xi_W_tot':[0,1],\
+                 'tau_V_ISM':[0,5],'Mdust':[2.5,10],'SFR':[-3,2]}
         plt.figure(figsize=(8,6))
         plt.subplots_adjust(wspace=.08,hspace=.25)
         for i,h in enumerate(allhist):
             plt.subplot(3,5,i+1)
-            t = plt.fill_between(h[0],h[1])
+            #t = plt.fill_between(h[0],h[1])
+            t = plt.bar(h[0],h[1],width=h[0][1]-h[0][0])
             plt.text(0.05,0.85,allhist_names[i],transform=plt.gca().transAxes,horizontalalignment='left')
             plt.ylim(0,1)
+            plt.xlim(xlims[allhist_names[i]][0],xlims[allhist_names[i]][1])
             if (i == 0) | (i == 5) | (i == 10) :
                 plt.yticks(np.linspace(0,1,3))
             else:
@@ -346,3 +353,4 @@ class magphys_sed():
         else:
             outfile = 'VFID{}-magphys-pdfs.png'.format(self.galid.rstrip())
         plt.savefig(outfile)
+        #return allhist

@@ -22,7 +22,7 @@ HOME = os.getenv("HOME")
 # directory where galaxy folders are
 data_dir = f"{HOME}/research/Virgo/magphysParallel/output/"
 data_dir = os.getcwd()+'/'
-code_dir = f"{HOME}/software/magphys/"
+code_dir = f"{HOME}/software/magphysCB07-BC03libs/"
 #print(data_dir)
 #print(code_dir)
 

@@ -55,8 +55,8 @@ for line in infile:
         else:
             # adding this for compatibility with the files that I gave Damien
             # these just have the numeric ID, and also use the V1 catalog names...
-            if not t[0].startswith('VFID'):
-                pdir = outdir+"VFID{:04d}".format(int((t[0])))
+            if t[0].startswith('VFID'):
+                pdir = outdir+"{}".format(t[0].replace("VFID","")
             else:
                 pdir = outdir+t[0]
             if not(os.path.exists(pdir)):
@@ -67,7 +67,7 @@ for line in infile:
             outfile.close()
             i += 1
 
-        os.system('ln -s '+Nfilters+' '+pdir+'/filters.dat')
+        os.system('cp '+Nfilters+' '+pdir+'/filters.dat')
 infile.close()
 
 # loop through South file
@@ -98,7 +98,7 @@ for line in infile:
             outfile.close()
             i += 1
 
-        os.system('ln -s '+Sfilters+' '+pdir+'/filters.dat')
+        os.system('cp '+Sfilters+' '+pdir+'/filters.dat')
 infile.close()
 
 
