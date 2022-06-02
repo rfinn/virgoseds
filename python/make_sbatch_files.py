@@ -31,7 +31,7 @@ def write_output(filename,dirname,submit=False):
     output += "# Set file to capture standard out and standard error and append the jobID (%j)\n"
     output += "#SBATCH -o logs/job.out.%j\n"
     output += "\n"
-    output += "#SBATCH --partition=normal\n"
+    output += "#SBATCH --partition=high\n"
     
     output += "#Set the number of nodes\n"
     output += "#SBATCH -N 1\n"
