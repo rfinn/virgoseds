@@ -63,7 +63,7 @@ for line in infile:
                 os.mkdir(pdir)
             outfile = open(pdir+'/observations.dat','w')
             outfile.write(header)
-            outfile.write(line)
+            outfile.write(line.replace("VFID",""))
             outfile.close()
             i += 1
 
