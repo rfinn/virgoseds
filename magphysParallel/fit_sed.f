@@ -35,7 +35,7 @@ c     ==========================================================================
       implicit none
       integer isave,i,j,k,i_gal,io,largo
       integer nmax,galmax,nmod
-      parameter(nmax=50,galmax=1) !nmax: maxium number of photometric points/filters
+      parameter(nmax=50,galmax=5000) !nmax: maxium number of photometric points/filters
       integer n_obs,n_models,ibin  !galmax: maximum number of galaxies in one input file
       integer kfilt_sfh(nmax),kfilt_ir(nmax),nfilt_sfh,nfilt_ir,nfilt_mix
       integer nprop_sfh,nprop_ir
@@ -43,7 +43,7 @@ c     ==========================================================================
       integer nfilt,filt_id(nmax),fit(nmax),ifilt
       parameter(nmod=50001,nprop_sfh=24,nprop_ir=8)
       character*12 filt_name(nmax)
-      character*12 outfile1,outfile2
+      character*10 outfile1,outfile2
       character*500 filter_header
       character*8 gal_name(galmax),aux_name
       character*6 numz
@@ -199,14 +199,10 @@ c     READ FILE WITH REDSHIFTS OF THE MODEL LIBRARIES
          nz=nz-1
           
 c     CHOOSE GALAXY TO FIT (enter corresponding i)
-c      write (6,'(x,a,$)') 'Choose galaxy - enter i_gal: '
-c      read (5,*) i_gal
-c     write(*,*) i_gal
-c
-c     RF - commented above 3 lines to set i_gal=1 automatically
-c     for running in parallel
-c
-      i_gal = 1  
+      write (6,'(x,a,$)') 'Choose galaxy - enter i_gal: '
+      read (5,*) i_gal
+      write(*,*) i_gal
+        
 c     WHAT OBSERVATIONS DO YOU WANT TO FIT?
 c     fit(ifilt)=1: fit flux from filter ifilt
 c     fit(ifilt)=0: do not fit flux from filter ifilt (set flux=-99)
@@ -238,10 +234,8 @@ c     OUTPUT FILES
 c     name.fit: fit results, PDFs etc
 c     name.sed: best-fit SED
       aux_name=gal_name(i_gal)
-c      outfile1=aux_name(1:largo(aux_name))//'.fit'
-c      outfile2=aux_name(1:largo(aux_name))//'.sed'
-      outfile1=aux_name//'.fit'
-      outfile2=aux_name//'.sed'
+      outfile1=aux_name(1:largo(aux_name))//'.fit'
+      outfile2=aux_name(1:largo(aux_name))//'.sed'
       close(31) 
       open (31, file=outfile1, status='unknown')
       
@@ -546,7 +540,7 @@ c     HERE STARTS THE ACTUAL FIT
 c
 c     For each model in the stellar library, find all the models in the infrared
 c     dust emission library for which the proportion of dust luminosity from stellar
-c     birth clouds and diffuse ISM is the same, i.e. same "mu" parameter (+/- df)
+c     birth clouds and diffuse ISM is the same, i.e. same "fmu" parameter (+/- df)
 c     Scale each infrared model satisfying this condition to the total dust 
 c     luminosity Ldust predicted by the stellar+attenuation model
 c     [this satisfies the energy balance]
@@ -1478,7 +1472,7 @@ c      outfile : .sed file (output)
 c     ===========================================================================
       implicit none
       character infile1*80,infile2*80
-      character*12 outfile
+      character*10 outfile
       integer nage,niw_opt,niw_ir,niw_tot
       integer i,imod,nburst,k
       integer i_opt,i_ir,indx

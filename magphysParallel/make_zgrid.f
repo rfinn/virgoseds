@@ -34,6 +34,7 @@ c       READ FILTER FILE: e.g. "filters.dat"
 	call getenv('USER_FILTERS',filters)
 	close(22)
 	open(22,file=filters,status='old')
+	write(*,*) "reading filters in make_zgrid"
 	do i=1,1
 	   read(22,*)
 	enddo
@@ -64,17 +65,14 @@ c       READ FILE WITH OBSERVATIONS:
 	close(20)
 
 c       OUTPUT FILE:
-	close(21)
-	open(21,file='zlibs.dat',status='unknown')
+	   close(21)
+	   open(21,file='zlibs.dat',status='unknown')
 
 
 c       OPTION: redshift grid or use exact z values
-c        write (6,'(x,a,$)') 'Build redshift grid [Y/N]?'
-c        read (5,'(a)',end=1) ans
-
-c       RF - 2022-May-20
-c       removing interactive option for running this in parallel
-	ans = 'N'
+        write (6,'(x,a,$)') 'Build redshift grid [Y/N]?'
+        read (5,'(a)',end=1) ans
+c	ans='N'
 	if (ans.eq.'y'.or.ans.eq.'Y') then
 	   write (6,'(x,a,$)') 'Building grid with dz=0.01...'
 
