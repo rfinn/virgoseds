@@ -79,7 +79,7 @@ cwd = os.getcwd()
 data_dir = os.getcwd()
 if not os.path.exists(data_dir+'/logs'):
     os.mkdir(data_dir+'/logs')
-dirlist = glob.glob(f"{data_dir}/VFID????")
+dirlist = glob.glob(f"{data_dir}/????")
 # reversing list b/c later galaxies are not getting run
 dirlist.sort(reverse=True)
 
