@@ -31,10 +31,17 @@ parser = argparse.ArgumentParser(description ='Program to convert phot files fro
 parser.add_argument('--sbmag', dest = 'sbmag', default = 23, help = 'sb to fit.  default is 23.  optins are 22, 23, 24, 25.')
 args = parser.parse_args()
 
+#################################################
+##### SET UP FILTERS AND EXTINCTION COEFFICIENTS
+#################################################
+
+
 filters = ['FUV','NUV','G','R','Z','W1','W2','W3','W4']
 # filter IDS from magphys filters.log
 filter_ids_S = ['123','124','426','427','429','280','281','282','414']
 filter_ids_N = ['123','124','551','552','553','280','281','282','414']
+
+
 
 writeFilterFiles = False
 if writeFilterFiles:
@@ -78,9 +85,9 @@ if writeFilterFiles:
         s = '{}   {}    {}    {}\n'.format(filters[i],all_effective_wavelengths[i],filter_ids_N[i],1)
         outf.write(s)
     outf.close()
-# WRITE OUT FILTERS.DAT
-outfile = '/home/rfinn/research/Virgo/legacy-phot/legacyFiltersS.dat'
-outf = open(outfile,'w')
+    # WRITE OUT FILTERS.DAT
+    outfile = '/home/rfinn/research/Virgo/legacy-phot/legacyFiltersS.dat'
+    outf = open(outfile,'w')
     outf.write('#name  lambda_eff   filter_id   fit?\n')
     for i,f in enumerate(filters):
         s = '{}   {}    {}    {}\n'.format(filters[i],all_effective_wavelengths[i],filter_ids_S[i],1)
@@ -175,7 +182,10 @@ for i in range(len(scale_factor)):
 ###########################################################
 #vffile = '/home/rfinn/research/Virgo/tables-north/v1/vf_north_v1_main.fits'
 vffile = '/home/rfinn/research/Virgo/tables-north/v2/vf_v2_main.fits'
-vfmain = Table.read(vffile,1) # first hdu is the elliptical photometry
+vfmain = Table.read(vffile)
+
+vffile = '/home/rfinn/research/Virgo/tables-north/v2/vf_v2_extinction.fits'
+vfext = Table.read(vffile) 
 
 # store redshift of each galaxy
 redshift = np.zeros(len(ephot),'d')
@@ -191,11 +201,15 @@ for i in range(len(ephot)):
 ###########################################################
 # create output table
 # ID redshift flux_0 flux_0_err flux_1 flux_1_err ...
+#
+# 2022-Jun-03 add extinction correction
 ###########################################################
 output_columns = [ephot1['VFID'],redshift]
 for i in range(len(filters)):
-    output_columns.append(scaled_flux_Jy[:,i])
-    output_columns.append(scaled_err_Jy[:,i])
+    ecolname = f'A({filters[i]})_SFD'
+    extcorr = 10.**(vfext[ecolname]/2.5)
+    output_columns.append(scaled_flux_Jy[:,i]*extcorr[vfindex])
+    output_columns.append(scaled_err_Jy[:,i]*extcorr[vfindex])
 #print(len(output_columns))
 colnames = ['#VFID','redshift']
 for i in range(len(filters)):

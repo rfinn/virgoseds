@@ -78,34 +78,37 @@ for d in dirlist:
             s = sedFunctions.magphys_sed(d,effective_wavelengths)
             s.plot_sed()
             s.plot_histograms()
-        
-            sedplot = '{}-magphys-sed.png'.format(d)
-            histplot = '{}-magphys-pdfs.png'.format(d)
+            if d.startswith('VFID'):
+                sedplot = '{}-magphys-sed.png'.format(d)
+                histplot = '{}-magphys-pdfs.png'.format(d)
+            else:
+                sedplot = 'VFID{}-magphys-sed.png'.format(d)
+                histplot = 'VFID{}-magphys-pdfs.png'.format(d)
+                
             os.rename(sedplot,os.path.join(plotdir,sedplot))
             os.rename(histplot,os.path.join(plotdir,histplot)) 
             plt.close('all')
             sfrs.append(np.log10(s.sfr))
             mstars.append(np.log10(s.mstar))
             
-        else:
-            # gather outputs only
-            # this is much faster
-            fit_file = d+'.fit'
-            in1 = open(fit_file,'r')
-            fit_lines = in1.readlines()
-            in1.close()
-            # flux is given as L_nu in units of L_sun/Hz
-            # I am keeping syntax/variable names similar to plot_sed
-            # but this is really a luminosity, or luminosity density?
-            flux = np.array(fit_lines[2].split(),'d') # observed L
-            e_flux = np.array(fit_lines[3].split(),'d') # error
-            # not sure exactly what these are yet, except for z of course...
-            i_sfh,i_ir,chi2,z = np.array(fit_lines[8].split(),'d')
-            fmu_sfh,fmu_ir,mu,tauv,ssfr,mstar,Ldust,T_W,T_C_ISM,\
-                xi_Ctot,xi_PAHtot,xi_MIRtot,xi_Wtot,\
-                tvism,Mdust,SFR = np.array(fit_lines[10].split(),'d')
+        # gather outputs only
+        # this is much faster
+        fit_file = d+'.fit'
+        in1 = open(fit_file,'r')
+        fit_lines = in1.readlines()
+        in1.close()
+        # flux is given as L_nu in units of L_sun/Hz
+        # I am keeping syntax/variable names similar to plot_sed
+        # but this is really a luminosity, or luminosity density?
+        flux = np.array(fit_lines[2].split(),'d') # observed L
+        e_flux = np.array(fit_lines[3].split(),'d') # error
+        # not sure exactly what these are yet, except for z of course...
+        i_sfh,i_ir,chi2,z = np.array(fit_lines[8].split(),'d')
+        fmu_sfh,fmu_ir,mu,tauv,ssfr,mstar,Ldust,T_W,T_C_ISM,\
+            xi_Ctot,xi_PAHtot,xi_MIRtot,xi_Wtot,\
+            tvism,Mdust,SFR = np.array(fit_lines[10].split(),'d')
             
-
+        if not args.plot:
             # get sfr and mstars
             sfrs.append(np.log10(SFR))
             mstars.append(np.log10(mstar))
