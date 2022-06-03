@@ -19,9 +19,20 @@ sys.path.append(HOME+'/github/Virgo/programs/')
 import sedFunctions
 from matplotlib import pyplot as plt
 from datetime import datetime
+import argparse
 
-testSample = True
+testSample = False
 makeplots=True
+
+
+###################################################################
+#### SET UP ARGPARSE
+###################################################################
+
+parser = argparse.ArgumentParser(description ='write out subtables for virgo filaments catalog')
+parser.add_argument('--plot',dest = 'plot', default=False,action='store_true',help='make plots of SED and pdf histograms.  Default is false.')
+    
+args = parser.parse_args()
 
 
 # this directory contains subdirectory for all the galaxy folders
@@ -36,7 +47,7 @@ if testSample:
     output_table = output_table_dir+'/vf_v1_magphys_testsample_'+myDate+'.fits'
     plotdir = HOME+'/research/Virgo/magphys/magphysParallelGrawp/plots-testsample/'    
 else:
-    magphys_output = HOME+'/research/Virgo/magphys/magphysParallelGrawp/output-2022May24/'
+    magphys_output = HOME+'/research/Virgo/magphys/magphysParallelGrawp/output/'
     output_table_dir = HOME+'/research/Virgo/tables-north/v2/'
     output_table = output_table_dir+'/vf_v2_magphys_'+myDate+'.fits'
     plotdir = HOME+'/research/Virgo/magphys/magphysParallelGrawp/plots/'
@@ -51,15 +62,19 @@ vfids = []
 vfid_numb = []
 sfrs  = []
 mstars = []
+nmagphys = 0
 for d in dirlist:
-    print('checking directory ',d)
+    if d.startswith('job'):
+        continue
+    #print('checking directory ',d)
     sedfile = d+'/'+d+'.sed'
     fitfile = d+'/'+d+'.fit'    
     if os.path.exists(sedfile):
-        print('\t found results for ',d)
+        #print('\t found results for ',d)
+        lastdir = d
         os.chdir(d)
-
-        if makeplots:
+        nmagphys += 1
+        if args.plot:
             s = sedFunctions.magphys_sed(d,effective_wavelengths)
             s.plot_sed()
             s.plot_histograms()
@@ -101,7 +116,8 @@ for d in dirlist:
         os.chdir(magphys_output)
         
 
-
+print('max directory = ',lastdir)
+print('number processed = ',nmagphys)
 sfrs = np.array(sfrs,'d')
 mstars = np.array(mstars,'d')
 # make table row-lined to
