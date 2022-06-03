@@ -32,7 +32,7 @@ def write_output(script_id,input_file,narray=1000,submit=False):
     output += "# Set file to capture standard out and standard error and append the jobID (%j)\n"
     output += "#SBATCH -o job.out.%j\n"
     output += "\n"
-    output += "#SBATCH --partition=high\n"
+    output += "#SBATCH --partition=normal\n"
     output += "\n"    
     output += "# for testing\n"
     output += f"#SBATCH --array=1-{narray}\n"
