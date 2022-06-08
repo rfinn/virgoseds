@@ -204,6 +204,8 @@ for i in range(len(ephot)):
 # ID redshift flux_0 flux_0_err flux_1 flux_1_err ...
 #
 # 2022-Jun-03 add extinction correction
+#
+# NEED TO UPDATE TO ALLOW FOR SALIM TREATMENT OF EXTINCTION
 ###########################################################
 output_columns = [ephot1['VFID'],redshift]
 for i in range(len(filters)):
