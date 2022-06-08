@@ -29,13 +29,16 @@ makeplots=True
 #### SET UP ARGPARSE
 ###################################################################
 
-parser = argparse.ArgumentParser(description ='write out subtables for virgo filaments catalog')
-parser.add_argument('--plot',dest = 'plot', default=False,action='store_true',help='make plots of SED and pdf histograms.  Default is false.')
+parser = argparse.ArgumentParser(description ='Gather output from magphys.')
+parser.add_argument('--plot',dest = 'plot', default=False,action='store_true',help='make plots of SED and pdf histograms.  This increases the execution time A LOT!!!  Default is false.')
+
+parser.add_argument('--magdir',dest = 'magdir', default='research/Virgo/maphys/magphysParallelGrawp/output/',help='directory to grab the magphys results from.  the default is HOMEDIR+research/Virgo/maphys/magphysParallelGrawp/output/')
+
     
 args = parser.parse_args()
 
 
-# this directory contains subdirectory for all the galaxy folders
+# the magphys_output directory contains subdirectory for all the galaxy folders
 
 dateTimeObj = datetime.now()
 myDate = dateTimeObj.strftime("%d-%b-%Y")
@@ -47,10 +50,17 @@ if testSample:
     output_table = output_table_dir+'/vf_v1_magphys_testsample_'+myDate+'.fits'
     plotdir = HOME+'/research/Virgo/magphys/magphysParallelGrawp/plots-testsample/'    
 else:
-    magphys_output = HOME+'/research/Virgo/magphys/magphysParallelGrawp/output/'
+
     output_table_dir = HOME+'/research/Virgo/tables-north/v2/'
     output_table = output_table_dir+'/vf_v2_magphys_'+myDate+'.fits'
     plotdir = HOME+'/research/Virgo/magphys/magphysParallelGrawp/plots/'
+
+magphys_output = os.path.join(HOME,args.magdir,'')
+
+# check to make sure the plot directory exists
+if not os.path.exists(plotdir):
+    os.mkdir(plotdir)
+    
 effective_wavelengths = np.array([ 0.1516,0.2267,0.48623,0.64606,0.91993,3.40025,4.65201,12.81034,22.37528],'d')
 os.chdir(magphys_output)
 

@@ -28,7 +28,8 @@ import argparse
 ###########################
 
 parser = argparse.ArgumentParser(description ='Program to convert phot files from JM to magphys input')
-parser.add_argument('--sbmag', dest = 'sbmag', default = 23, help = 'sb to fit.  default is 23.  optins are 22, 23, 24, 25.')
+parser.add_argument('--sbmag', dest = 'sbmag', default = 23, help = 'sb to fit.  default is 23.  options are [22,26] in increments of 0.5.')
+parser.add_argument('--ext', dest = 'ext', default = 0, help = 'extinction correction to apply.  0=None; 1=Legacy Survey; 2=Salim/Leroy.  The main difference between 1 and 0 is how the GALEX fluxes are handled.  See Leroy+2019 for more details.')
 args = parser.parse_args()
 
 #################################################
