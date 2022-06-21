@@ -203,9 +203,11 @@ for i in range(len(ephot)):
 # create output table
 # ID redshift flux_0 flux_0_err flux_1 flux_1_err ...
 #
-# 2022-Jun-03 add extinction correction
+# 2022-Jun-03 add extinction correction using
+# legacy survey prescription
 #
 # NEED TO UPDATE TO ALLOW FOR SALIM TREATMENT OF EXTINCTION
+# this will allow us to compare with Leroy+2019 values
 ###########################################################
 output_columns = [ephot1['VFID'],redshift]
 for i in range(len(filters)):
