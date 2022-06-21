@@ -139,32 +139,104 @@ for i,f in enumerate(ivars):
     # set error for galaxies with ivar=0 to large value
     err_Jy[:,i][~flag] = 1e6*np.ones(sum(~flag),'d')
 
+
+
 ################################################
-## SCALE FLUXES BY RATIO OF FLUX_MTOT/FLUX_R25
+## FIND THE BEST APERTURE FLUX TO USE
+## use the r-band data for this
+## the default is set by the input parameter
+## but need to make adjustments if this is not available
+## also need to track which aperture flux we use
+################################################
+
+# create a column to track the input SB used
+input_sb = []
+for i in range(len(ephot)):
+    input_sb.append(args.sbmag)
+
+
+total_flux_column = []
+for i in range(len(ephot)):
+    total_flux_column.append('COG_MTOT_R')
+
+# find galaxies whose r-band flux is zero
+zeroRfluxFlag =     flux_Jy[:,1] == 0
+zeroIndices = np.arange(len(ephot))[zeroRfluxFlag]
+print('number of galaxies with SB24_R == 0 is {}'.format(len(zeroIndices)))
+
+# search through alternate fluxes to find a valid one
+# ordering in terms of SB mags with highest completeness
+possible_mags = [23.5,24.5,23,25,25.5,26,22.5,22]
+nbadR = 0
+for i in zeroIndices:
+    foundAltInputFlux = False
+    for m in possible_mags:
+        colname = f'FLUX_SB{m}_R'
+        
+        if ephot[colname][i] > 0:
+            #print(f'found alternate input flux for {i} us SB={m}')
+            # exit mag loop once non-zero option is found
+            foundAltInputFlux = True
+
+
+            # track the SB of the valid one if an alternative is found
+            input_sb[i] = m
+    
+            # set all fluxes to this SB for this galaxy
+            for j,f in enumerate(filters):
+        
+                colname = f'FLUX_SB{m}_{f}'
+                ivarname = f'FLUX_IVAR_SB{m}_{f}'        
+                flux_Jy[i,j] = ephot[colname][i]*3.631e-6
+                err_Jy[i,j] = 1./np.sqrt(ephot[ivarname][i])*3.631e-6 # convert inverse variance to error, also convert from nanomaggy to Jy
+
+            break
+        
+    if not foundAltInputFlux:
+        print('WARNING: no alternate r-band input flux:{}, VFID{:04d} ({})'.format(i,ephot['VF_ID'][i],ephot['GALAXY'][i]))
+        nbadR += 1
+
+print()
+print('total number with no valid R-band flux as input = {}'.format(nbadR))
+print()
+
+
+################################################
+## SCALE FLUXES BY RATIO OF FLUX_MTOT/FLUX_R24
 ## use the r-band data for this
 ################################################
 rmag_tot = ephot['COG_MTOT_R']
 # check to see if rmag_tot = -1; this happens if the John's cog fails
+
+possible_mags = [26,25.5,25,24.5,24,23.5,23,22.5,22]
+bad_scale_factor = np.zeros(len(ephot),'bool')
 for i,r in enumerate(rmag_tot):
     
     if r == -1:
-        if ephot['FLUX_SB26_R'][i] != 0:
-            scaling_col = 'FLUX_SB26_R'
-            print('COG_MTOT_R = -1 for {} but found {} {}'.format(ephot['GALAXY'][i],scaling_col, ephot['FLUX_SB26_R'][i]))
-        elif ephot['FLUX_SB25_R'][i] != 0:
-            scaling_col = 'FLUX_SB25_R'
-            print('COG_MTOT_R = -1 for {} but found {}'.format(ephot['GALAXY'][i],scaling_col))            
-        elif ephot['FLUX_SB24_R'][i] != 0:
-            scaling_col = 'FLUX_SB24_R'
-            print('COG_MTOT_R = -1 for {} but found {}'.format(ephot['GALAXY'][i],scaling_col))            
-        elif ephot['FLUX_SB23_R'][i] != 0:
-            scaling_col = 'FLUX_SB23_R'
-            print('COG_MTOT_R = -1 for {} but found {}'.format(ephot['GALAXY'][i],scaling_col))            
-        else:
-            print('WARNING: no viable r-band magnitude for {} ({})'.format(ephot['VF_ID'][i],ephot['GALAXY'][i]))
+        foundAltTotal = False
+        # just search for fluxes in fainter SB
+        t = np.arange(float(input_sb[i]),26.5,.5)
+        # this will set the scale to 1 if no fainter SB is found
+        for sb in np.flip(t):
+            if sb%1 == 0:
+                colname = 'FLUX_SB{:.0f}_R'.format(sb)
+            else:
+                colname = 'FLUX_SB{:.1f}_R'.format(sb)
+                        
+            if ephot[colname][i] >= 0:
+                scaling_col = colname
+                total_flux_column[i] = colname
+                foundAltTotal = True
+                #print('{}: COG_MTOT_R = -1 for {} but found {} {}'.format(i,ephot['GALAXY'][i],scaling_col, ephot[colname][i]))
+                rmag_tot[i] = 22.5 - 2.5*np.log10(ephot[scaling_col][i])
+                break
+          
+        if not foundAltTotal:
+            
+            print('WARNING: no viable r-band magnitude to use as total for VFID{:04d} ({})'.format(ephot['VF_ID'][i],ephot['GALAXY'][i]))
             # don't reset rmag_tot - this will yield ridiculously high stellar masses
             continue          
-        rmag_tot[i] = 22.5 - 2.5*np.log10(ephot[scaling_col][i])
+        
         
 flux_tot = 10.**((22.5-rmag_tot)/2.5) # flux in nanomaggies
 flux_tot_Jy = flux_tot*3.631e-6
@@ -174,8 +246,13 @@ scale_factor = flux_tot_Jy/flux_Jy[:,3]
 scaled_flux_Jy = np.zeros(flux_Jy.shape,'d')
 scaled_err_Jy = np.zeros(flux_Jy.shape,'d')
 for i in range(len(scale_factor)):
+    # check for nans and inf
+    if (not np.isfinite(scale_factor[i])) | (scale_factor[i] < 1):
+        scale_factor[i] = 1
     scaled_flux_Jy[i] = flux_Jy[i]*scale_factor[i]
     scaled_err_Jy[i] = err_Jy[i]*scale_factor[i]
+
+
 ###########################################################
 ## read in vf_main so we can get redshift for each galaxy
 ##
@@ -211,6 +288,7 @@ for i in range(len(ephot)):
 ###########################################################
 output_columns = [ephot1['VFID'],redshift]
 for i in range(len(filters)):
+    # can change suffice to _S16 to use extinction law use in Salim+2016
     ecolname = f'A({filters[i]})_SFD'
     extcorr = 10.**(vfext[ecolname]/2.5)
     output_columns.append(scaled_flux_Jy[:,i]*extcorr[vfindex])
@@ -244,3 +322,5 @@ out_table[nsf_flag].write(outfile,format='ascii',overwrite=True,names=colnames)
 #ptab.write(outfile,format='ascii.fast_no_header',overwrite=True,comment=False)
 # 
 
+
+# save table with input_sb, total_flux_column, scale_factor
