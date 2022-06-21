@@ -150,9 +150,12 @@ for i,f in enumerate(ivars):
 ################################################
 
 # create a column to track the input SB used
+input_sb_colname = []
 input_sb = []
+ApFluxInput = np.zeros(len(ephot),'bool')
 for i in range(len(ephot)):
-    input_sb.append(args.sbmag)
+    input_sb_colname.append('FLUX_SB{}_R'.format(args.sbmag))
+    input_sb.append(args.sbmag)    
 
 
 total_flux_column = []
@@ -180,7 +183,8 @@ for i in zeroIndices:
 
 
             # track the SB of the valid one if an alternative is found
-            input_sb[i] = m
+            input_sb_colname[i] = colname
+            input_sb[i] = m            
     
             # set all fluxes to this SB for this galaxy
             for j,f in enumerate(filters):
@@ -194,10 +198,41 @@ for i in zeroIndices:
         
     if not foundAltInputFlux:
         print('WARNING: no alternate r-band input flux:{}, VFID{:04d} ({})'.format(i,ephot['VF_ID'][i],ephot['GALAXY'][i]))
-        nbadR += 1
 
+        # now check through the aperture fluxes to look for a good one
+        foundAltInputApFlux = False
+        for nap in np.arange(8,0,-1):
+            colname = 'FLUX_AP{:02d}_R'.format(nap)
+            ivarname = 'FLUX_IVAR_AP{:02d}_R'.format(nap)                    
+            if ephot[colname][i] >= 0:
+
+                foundAltInputApFlux = True
+                ApFluxInput[i] = True
+
+                # track the SB of the valid one if an alternative is found
+                input_sb[i] = colname
+    
+                # set all fluxes to this SB for this galaxy
+                for j,f in enumerate(filters):
+        
+                    colname = 'FLUX_AP{:02d}_{}'.format(nap,f)
+                    ivarname = 'FLUX_IVAR_AP{:02d}_{}'.format(nap,f)
+                    flux_Jy[i,j] = ephot[colname][i]*3.631e-6
+                    err_Jy[i,j] = 1./np.sqrt(ephot[ivarname][i])*3.631e-6 # convert inverse variance to error, also convert from nanomaggy to Jy
+
+                break
+
+
+        if not foundAltInputApFlux:
+            print("\t could not find an ap flux either :(")
+            nbadR += 1
+        else:
+            print("\t found an ap flux!!!")
 print()
 print('total number with no valid R-band flux as input = {}'.format(nbadR))
+print()
+print()
+print()
 print()
 
 
@@ -215,32 +250,47 @@ for i,r in enumerate(rmag_tot):
     if r == -1:
         foundAltTotal = False
         # just search for fluxes in fainter SB
-        t = np.arange(float(input_sb[i]),26.5,.5)
-        # this will set the scale to 1 if no fainter SB is found
-        for sb in np.flip(t):
-            if sb%1 == 0:
-                colname = 'FLUX_SB{:.0f}_R'.format(sb)
-            else:
-                colname = 'FLUX_SB{:.1f}_R'.format(sb)
+
+        if not ApFluxInput[i]:
+            # this will set the scale to 1 if no fainter SB is found
+            for sb in np.arange(26,float(input_sb[i])-.5,-0.5):
+                if sb%1 == 0:
+                    colname = 'FLUX_SB{:.0f}_R'.format(sb)
+                else:
+                    colname = 'FLUX_SB{:.1f}_R'.format(sb)
                         
-            if ephot[colname][i] >= 0:
-                scaling_col = colname
-                total_flux_column[i] = colname
-                foundAltTotal = True
-                #print('{}: COG_MTOT_R = -1 for {} but found {} {}'.format(i,ephot['GALAXY'][i],scaling_col, ephot[colname][i]))
-                rmag_tot[i] = 22.5 - 2.5*np.log10(ephot[scaling_col][i])
-                break
+                if ephot[colname][i] >= 0:
+                    scaling_col = colname
+                    total_flux_column[i] = colname
+                    foundAltTotal = True
+                    #print('{}: COG_MTOT_R = -1 for {} but found {} {}'.format(i,ephot['GALAXY'][i],scaling_col, ephot[colname][i]))
+                    rmag_tot[i] = 22.5 - 2.5*np.log10(ephot[scaling_col][i])
+                    break
           
-        if not foundAltTotal:
-            
-            print('WARNING: no viable r-band magnitude to use as total for VFID{:04d} ({})'.format(ephot['VF_ID'][i],ephot['GALAXY'][i]))
-            # don't reset rmag_tot - this will yield ridiculously high stellar masses
-            continue          
+            if not foundAltTotal:
+                foundAltApTotal=False
+                print('WARNING: no viable r-band magnitude to use as total for:{}, VFID{:04d} ({}) - checking AP FLUXES'.format(i,ephot['VF_ID'][i],ephot['GALAXY'][i]))
+                for nap in np.arange(8,0,-1):
+                    colname = 'FLUX_AP{:02d}_R'.format(nap)
+                    if ephot[colname][i] >= 0:
+                        scaling_col = colname
+                        total_flux_column[i] = colname
+                        foundAltApTotal = True
+                        #print('{}: COG_MTOT_R = -1 for {} but found {} {}'.format(i,ephot['GALAXY'][i],scaling_col, ephot[colname][i]))
+                        rmag_tot[i] = 22.5 - 2.5*np.log10(ephot[scaling_col][i])
+                        break
+                if not foundAltApTotal:
+                    print("\t could not find an ap flux to use as a total either :(")
         
         
 flux_tot = 10.**((22.5-rmag_tot)/2.5) # flux in nanomaggies
 flux_tot_Jy = flux_tot*3.631e-6
 scale_factor = flux_tot_Jy/flux_Jy[:,3]
+
+# galaxies with no valid total flux
+noTotalFlux = rmag_tot == -1
+if np.sum(noTotalFlux) > 0:
+    scale_factor[noTotalFlux] = np.ones(np.sum(noTotalFlux))
 
 # scale the flux and error in all wavebands
 scaled_flux_Jy = np.zeros(flux_Jy.shape,'d')
