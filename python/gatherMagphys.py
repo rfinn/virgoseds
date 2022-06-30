@@ -22,7 +22,7 @@ from datetime import datetime
 import argparse
 
 testSample = False
-makeplots=True
+makeplots=False
 
 
 ###################################################################
@@ -32,7 +32,7 @@ makeplots=True
 parser = argparse.ArgumentParser(description ='Gather output from magphys.')
 parser.add_argument('--plot',dest = 'plot', default=False,action='store_true',help='make plots of SED and pdf histograms.  This increases the execution time A LOT!!!  Default is false.')
 
-parser.add_argument('--magdir',dest = 'magdir', default='research/Virgo/maphys/magphysParallelGrawp/output/',help='directory to grab the magphys results from.  the default is HOMEDIR+research/Virgo/maphys/magphysParallelGrawp/output/')
+parser.add_argument('--magdir',dest = 'magdir', default='research/Virgo/magphys/magphysParallelGrawp/output/',help='directory to grab the magphys results from.  the default is HOMEDIR+research/Virgo/maphys/magphysParallelGrawp/output/')
 
     
 args = parser.parse_args()
