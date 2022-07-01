@@ -25,10 +25,11 @@ import os
 ##### SET UP ARGPARSE
 ###########################
 import argparse
-parser = argparse.ArgumentParser(description ='Program to convert phot files from JM to magphys input')
+parser = argparse.ArgumentParser(description ='Program to set up directories for individual galaxies.  Can then run magphys in parallel using make_sbatch_array_files.py.')
 #parser.add_argument('--sbmag', dest = 'sbmag', default = 24, help = 'sb to fit.  default is 24, as this has the highest fraction of non-zero entries.  The options are [22,26] in increments of 0.5.')
-parser.add_argument('--ext', dest = 'ext', default = 0, help = 'extinction correction to apply.  0=None; 1=Legacy Survey; 2=Salim/Leroy.  The main difference between 1 and 2 is how the GALEX fluxes are handled.  See Leroy+2019 and Salim+2016 for more details.')
-parser.add_argument('--nozband', dest = 'nozband', default = True, help = 'use z-band in sed fits.  usually you will not adjust this.  adding option for testing to see if this is the root of the systematic difference in magphys results between N and S samples.')
+parser.add_argument('--ext', dest = 'ext', default = 0, help = 'extinction correction to apply.  0=None; 1=Legacy Survey; 2=Salim/Leroy.  Default is zero. The main difference between 1 and 2 is how the GALEX fluxes are handled.  See Leroy+2019 and Salim+2016 for more details.')
+parser.add_argument('--nozband', dest = 'nozband', default = False,action='store_true', help = 'do not use z-band in sed fits.  Default is false. usually you will not adjust this.  adding option for testing to see if this is the root of the systematic difference in magphys results between N and S samples.')
+
 
 args = parser.parse_args()
 ############################

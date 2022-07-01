@@ -55,12 +55,12 @@ def write_output(script_id,input_file,narray=1000,data_dir=None,submit=False):
     output += "\n"
     output += "# perform calculation\n"
     output += "#\n"
-    if data_dir in not None:
+    if data_dir is not None:
         s = f'LINE=$(sed -n "$SLURM_ARRAY_TASK_ID"p {data_dir}/{input_file})\n'
     else:
         print('please provide a valid data directory')
         return
-    output += 
+    output += s
     output += "#\n"    
     output += f"python {HOME}/github/virgoseds/python/run1magphys.py $LINE\n"
 
@@ -86,10 +86,10 @@ def write_output(script_id,input_file,narray=1000,data_dir=None,submit=False):
 ##### SET UP ARGPARSE
 ###########################
 import argparse
-parser = argparse.ArgumentParser(description ='Program to get maphys running ')
-#parser.add_argument('--sbmag', dest = 'sbmag', default = 24, help = 'sb to fit.  default is 24, as this has the highest fraction of non-zero entries.  The options are [22,26] in increments of 0.5.')
-parser.add_argument('--ext', dest = 'ext', default = 0, help = 'extinction correction to apply.  0=None; 1=Legacy Survey; 2=Salim/Leroy.  The main difference between 1 and 2 is how the GALEX fluxes are handled.  See Leroy+2019 and Salim+2016 for more details.')
-parser.add_argument('--nozband', dest = 'nozband', default = True, help = 'use z-band in sed fits.  usually you will not adjust this.  adding option for testing to see if this is the root of the systematic difference in magphys results between N and S samples.')
+parser = argparse.ArgumentParser(description ='Program to create bash script to run magphys in parallel.  This uses the array option in slurm so that the processes are associated with the same process id, rather than submitting a bunch of individual jobs.  The script can be submitted by setting the --submit flag.')
+parser.add_argument('--ext', dest = 'ext', default = 0, help = 'extinction correction to apply.  0=None; 1=Legacy Survey; 2=Salim/Leroy. Default is zero. The main difference between 1 and 2 is how the GALEX fluxes are handled.  See Leroy+2019 and Salim+2016 for more details.')
+parser.add_argument('--nozband', dest = 'nozband', default = False,action='store_true', help = 'do not use z-band in sed fits.  Default is false. usually you will not adjust this.  adding option for testing to see if this is the root of the systematic difference in magphys results between N and S samples.')
+parser.add_argument('--submit', dest = 'submit', default = False, action='store_true',help = 'Set this option to submit the script to slurm. Default is false. You can check output JOB_{scriptid}.sh.  If everything looks good, then add submit flag.')
 args = parser.parse_args()
 
 
@@ -139,4 +139,4 @@ os.chdir(cwd)
 #for d in dirlist:
 script_id = "VFIDall"
 input_file = "Dirs.txt"
-write_output(script_id,input_file,narray=nfiles,data_dir=data_dir,submit=True)
+write_output(script_id,input_file,narray=nfiles,data_dir=data_dir,submit=args.submit)
