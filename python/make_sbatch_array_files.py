@@ -21,8 +21,8 @@ import glob
 HOME = os.getenv("HOME")
 
 
-def write_output(script_id,input_file,narray=1000,submit=False):
-    ''' copying from Matt Bellis '''
+def write_output(script_id,input_file,narray=1000,data_dir=None,submit=False):
+    ''' copying python from Matt Bellis, commands from Ryan Decker '''
     output = ""
     output += "#!/bin/bash\n"
     output += "\n"
@@ -33,7 +33,8 @@ def write_output(script_id,input_file,narray=1000,submit=False):
     output += "#SBATCH -o job.out.%j\n"
     output += "\n"
     output += "#SBATCH --partition=normal\n"
-    output += "\n"    
+    output += "\n"
+    # running in array mode, rather than spawning narray independent processes
     output += "# for testing\n"
     output += f"#SBATCH --array=1-{narray}\n"
     output += "\n"
@@ -54,7 +55,12 @@ def write_output(script_id,input_file,narray=1000,submit=False):
     output += "\n"
     output += "# perform calculation\n"
     output += "#\n"
-    output += f'LINE=$(sed -n "$SLURM_ARRAY_TASK_ID"p $HOME/research/Virgo/magphysParallel/output/{input_file})\n'
+    if data_dir in not None:
+        s = f'LINE=$(sed -n "$SLURM_ARRAY_TASK_ID"p {data_dir}/{input_file})\n'
+    else:
+        print('please provide a valid data directory')
+        return
+    output += 
     output += "#\n"    
     output += f"python {HOME}/github/virgoseds/python/run1magphys.py $LINE\n"
 
@@ -72,13 +78,33 @@ def write_output(script_id,input_file,narray=1000,submit=False):
         print(stdout.decode())
         print(stderr.decode())
         pass
-        
+
+
+
+
+###########################
+##### SET UP ARGPARSE
+###########################
+import argparse
+parser = argparse.ArgumentParser(description ='Program to get maphys running ')
+#parser.add_argument('--sbmag', dest = 'sbmag', default = 24, help = 'sb to fit.  default is 24, as this has the highest fraction of non-zero entries.  The options are [22,26] in increments of 0.5.')
+parser.add_argument('--ext', dest = 'ext', default = 0, help = 'extinction correction to apply.  0=None; 1=Legacy Survey; 2=Salim/Leroy.  The main difference between 1 and 2 is how the GALEX fluxes are handled.  See Leroy+2019 and Salim+2016 for more details.')
+parser.add_argument('--nozband', dest = 'nozband', default = True, help = 'use z-band in sed fits.  usually you will not adjust this.  adding option for testing to see if this is the root of the systematic difference in magphys results between N and S samples.')
+args = parser.parse_args()
+
 
 ###########################################################
 cwd = os.getcwd()
 
 data_dir = f"{HOME}/research/Virgo/magphysParallel/output/"
+if int(args.ext) == 1:
+    data_dir = f"{HOME}/research/Virgo/magphysParallel/output-legacyExt/"
+if int(args.ext) == 2:
+    data_dir = f"{HOME}/research/Virgo/magphysParallel/output-salimExt/"
+if args.nozband:
+    data_dir = f"{HOME}/research/Virgo/magphysParallel/output-nozband/"
 os.chdir(data_dir)
+
 '''
 nfiles = []
 for i in range(7):
@@ -113,4 +139,4 @@ os.chdir(cwd)
 #for d in dirlist:
 script_id = "VFIDall"
 input_file = "Dirs.txt"
-write_output(script_id,input_file,narray=nfiles,submit=True)
+write_output(script_id,input_file,narray=nfiles,data_dir=data_dir,submit=True)

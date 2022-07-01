@@ -2,17 +2,15 @@
 '''
 GOAL:
 this program takes the output from legacy2magphys.py 
-and sets up for parallel processing.  This program creates
-a directory for each galaxy with non-nan phot values, 
-puts photometry into observations.dat
-and creates a symbolic link to the appropriate filter file.
+and sets up for parallel processing.  
 
-The parallel processing can then be run from 
+This program:
+* creates a directory for each galaxy with non-nan phot values, 
+* puts photometry into observations.dat.
+* copies the appropriate filter file.
 
-/home/rfinn/Virgo/magphysParallel
+The parallel processing can then be run by calling make_sbatch_array_files.py
 
-tcsh
-source $magphys/runparallel
 
 
 '''
@@ -20,18 +18,63 @@ from astropy.table import Table
 import numpy as np
 import os
 
-homedir = os.getenv("HOME")
-# input files
+
+
+
+###########################
+##### SET UP ARGPARSE
+###########################
+import argparse
+parser = argparse.ArgumentParser(description ='Program to convert phot files from JM to magphys input')
+#parser.add_argument('--sbmag', dest = 'sbmag', default = 24, help = 'sb to fit.  default is 24, as this has the highest fraction of non-zero entries.  The options are [22,26] in increments of 0.5.')
+parser.add_argument('--ext', dest = 'ext', default = 0, help = 'extinction correction to apply.  0=None; 1=Legacy Survey; 2=Salim/Leroy.  The main difference between 1 and 2 is how the GALEX fluxes are handled.  See Leroy+2019 and Salim+2016 for more details.')
+parser.add_argument('--nozband', dest = 'nozband', default = True, help = 'use z-band in sed fits.  usually you will not adjust this.  adding option for testing to see if this is the root of the systematic difference in magphys results between N and S samples.')
+
+args = parser.parse_args()
+############################
+
+
+###########################
+##### SET UP INPUT FILES
+##### ACCORDING TO EXTINCTION
+##### AND ZBAND OPTIONS
+###########################
+
 legdir = homedir+'/research/Virgo/legacy-phot/'
 
 legdir = os.getcwd()
-Nphot = os.path.join(legdir,'magphysInputN.dat')
-Sphot = os.path.join(legdir,'magphysInputS.dat')
+file_suffix=''
+
+# these are the default values for running
+# without the extinction correction and
+# including the z-band data
+outdir = os.path.join(os.getcwd(),'output/')
 Nfilters = os.path.join(legdir,'legacyFiltersN.dat')
 Sfilters = os.path.join(legdir,'legacyFiltersS.dat')
 
+if int(args.ext) == 1:
+    outdir = outdir.replace('output/',"output-legacyExt/")
+    file_suffix='-legacyExt'
+if int(args.ext) == 2:
+    outdir = outdir.replace('output/',"output-salimExt/")
+    file_suffix='-salimExt'    
+if args.nozband:
+    outdir = outdir.replace('output/',"output-nozband/")
+    Nfilters = os.path.join(legdir,'legacyFiltersN-nozband.dat')
+    Sfilters = os.path.join(legdir,'legacyFiltersS-nozband.dat')
+    
 
-outdir = os.path.join(os.getcwd(),'output/')
+Nphot = os.path.join(legdir,f'magphysInputN{file_suffix}.dat')
+Sphot = os.path.join(legdir,f'magphysInputS{file_suffix}.dat')
+
+
+
+
+
+homedir = os.getenv("HOME")
+# input files
+
+
 #homedir+'/research/Virgo/magphysParallel/'
 #outdir = legdir+'/maphysParallel/'
 if not(os.path.exists(outdir)):
