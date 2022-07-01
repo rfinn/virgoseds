@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
 '''
+GOAL:
+* This will create a bash script to run multiple serial jobs in parallel using slurms array option
 
-* this will split sample into groups of 1000 to meet max limit of arrays
-* run this from the directory where you want all the scripts created, e.g. ~/scripts/
-
-
-* to launch, set submit=True
-
+USAGE:
+* Run this in the output directory that has a subfolder for each galaxy.
+* Try running this once and check the output of the JOB_{}.sh script.
+* If it looks good, run again using the --submit flag to submit the script to slurm.
 
 '''
 
@@ -99,10 +99,13 @@ cwd = os.getcwd()
 data_dir = f"{HOME}/research/Virgo/magphysParallel/output/"
 if int(args.ext) == 1:
     data_dir = f"{HOME}/research/Virgo/magphysParallel/output-legacyExt/"
+    script_id = "VFIDall-legacyExt"
 if int(args.ext) == 2:
     data_dir = f"{HOME}/research/Virgo/magphysParallel/output-salimExt/"
+    script_id = "VFIDall-salimExt"    
 if args.nozband:
     data_dir = f"{HOME}/research/Virgo/magphysParallel/output-nozband/"
+    script_id = "VFIDall-nozband"    
 os.chdir(data_dir)
 
 '''
@@ -132,11 +135,13 @@ os.system(f"ls -d ???? > {outfile}")
 infile = open(outfile,'r')
 nfiles = (len(infile.readlines()))
 infile.close()
-os.chdir(cwd)
+
 
 
 # write out files and submit jobs
 #for d in dirlist:
-script_id = "VFIDall"
+
 input_file = "Dirs.txt"
 write_output(script_id,input_file,narray=nfiles,data_dir=data_dir,submit=args.submit)
+
+os.chdir(cwd)
