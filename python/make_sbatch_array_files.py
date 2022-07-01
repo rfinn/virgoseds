@@ -97,6 +97,7 @@ args = parser.parse_args()
 cwd = os.getcwd()
 
 data_dir = f"{HOME}/research/Virgo/magphysParallel/output/"
+script_id = "VFIDall"
 if int(args.ext) == 1:
     data_dir = f"{HOME}/research/Virgo/magphysParallel/output-legacyExt/"
     script_id = "VFIDall-legacyExt"
