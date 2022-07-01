@@ -55,10 +55,10 @@ Sfilters = os.path.join(legdir,'legacyFiltersS.dat')
 
 if int(args.ext) == 1:
     outdir = outdir.replace('output/',"output-legacyExt/")
-    file_suffix='-legacyExt'
+    file_suffix='_legacyExt'
 if int(args.ext) == 2:
     outdir = outdir.replace('output/',"output-salimExt/")
-    file_suffix='-salimExt'    
+    file_suffix='_salimExt'    
 if args.nozband:
     outdir = outdir.replace('output/',"output-nozband/")
     Nfilters = os.path.join(legdir,'legacyFiltersN-nozband.dat')
