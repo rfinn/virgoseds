@@ -53,11 +53,17 @@ outdir = os.path.join(os.getcwd(),'output/')
 Nfilters = os.path.join(legdir,'legacyFiltersN.dat')
 Sfilters = os.path.join(legdir,'legacyFiltersS.dat')
 
-if int(args.ext) == 1:
+if int(args.ext) == 1 and args.nozband:
     outdir = outdir.replace('output/',"output-legacyExt/")
     file_suffix='_legacyExt'
 if int(args.ext) == 2:
     outdir = outdir.replace('output/',"output-salimExt/")
+    file_suffix='_salimExt'    
+if int(args.ext) == 1 and args.nozband:
+    outdir = outdir.replace('output/',"output-nozband-legacyExt/")
+    file_suffix='_legacyExt'
+if int(args.ext) == 2 and args.nozband:
+    outdir = outdir.replace('output/',"output-nozband-salimExt/")
     file_suffix='_salimExt'    
 if args.nozband:
     outdir = outdir.replace('output/',"output-nozband/")
