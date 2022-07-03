@@ -102,14 +102,13 @@ cwd = os.getcwd()
 if not args.nozband:
     data_dir = f"{HOME}/research/Virgo/magphysParallel/output/"
     script_id = "VFIDall"
-
     if int(args.ext) == 1:
         data_dir = f"{HOME}/research/Virgo/magphysParallel/output-legacyExt/"
         script_id = "VFIDall-legacyExt"
     if int(args.ext) == 2:
         data_dir = f"{HOME}/research/Virgo/magphysParallel/output-salimExt/"
         script_id = "VFIDall-salimExt"    
-if args.nozband:
+elif args.nozband:
     data_dir = f"{HOME}/research/Virgo/magphysParallel/output-nozband/"
     script_id = "VFIDall-nozband"
     if int(args.ext) == 1:
@@ -118,7 +117,10 @@ if args.nozband:
     if int(args.ext) == 2:
         data_dir = f"{HOME}/research/Virgo/magphysParallel/output-nozband-salimExt/"
         script_id = "VFIDall-nozband-salimExt"    
-    
+print('data_dir = ',data_dir)
+print()
+print('script_id = ',script_id)
+print()
 os.chdir(data_dir)
 
 '''
