@@ -53,23 +53,25 @@ outdir = os.path.join(os.getcwd(),'output/')
 Nfilters = os.path.join(legdir,'legacyFiltersN.dat')
 Sfilters = os.path.join(legdir,'legacyFiltersS.dat')
 
-if int(args.ext) == 1 and args.nozband:
-    outdir = outdir.replace('output/',"output-legacyExt/")
-    file_suffix='_legacyExt'
-if int(args.ext) == 2:
-    outdir = outdir.replace('output/',"output-salimExt/")
-    file_suffix='_salimExt'    
-if int(args.ext) == 1 and args.nozband:
-    outdir = outdir.replace('output/',"output-nozband-legacyExt/")
-    file_suffix='_legacyExt'
-if int(args.ext) == 2 and args.nozband:
-    outdir = outdir.replace('output/',"output-nozband-salimExt/")
-    file_suffix='_salimExt'    
-if args.nozband:
-    outdir = outdir.replace('output/',"output-nozband/")
+if not args.nozband:
+    if int(args.ext) == 1:
+        outdir = outdir.replace('output/',"output-legacyExt/")
+        file_suffix='_legacyExt'
+    elif int(args.ext) == 2:
+        outdir = outdir.replace('output/',"output-salimExt/")
+        file_suffix='_salimExt'
+else:        
+    if int(args.ext) == 1 and args.nozband:
+        outdir = outdir.replace('output/',"output-nozband-legacyExt/")
+        file_suffix='_legacyExt'
+    elif int(args.ext) == 2 and args.nozband:
+        outdir = outdir.replace('output/',"output-nozband-salimExt/")
+        file_suffix='_salimExt'    
+    elif args.nozband:
+        outdir = outdir.replace('output/',"output-nozband/")
     Nfilters = os.path.join(legdir,'legacyFiltersN-nozband.dat')
     Sfilters = os.path.join(legdir,'legacyFiltersS-nozband.dat')
-    
+
 
 Nphot = os.path.join(legdir,f'magphysInputN{file_suffix}.dat')
 Sphot = os.path.join(legdir,f'magphysInputS{file_suffix}.dat')
