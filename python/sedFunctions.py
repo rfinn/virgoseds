@@ -122,9 +122,14 @@ class magphys_sed():
         #self.fit_file = '{}.f'.format(galid)
         self.lambda_eff = np.array(wavelengths,'d')
         self.galid = galid
-    def plot_sed(self,plot_unattenuated=True):
-        fig = plt.figure(figsize=(8,6))
-        plt.subplots_adjust(left=.2)
+    def plot_sed(self,plot_unattenuated=True,plotsingle=True,fig=None):
+        '''
+        * plotsingle = default is True; set this for making a separate fig with sed and res
+        * fig = if plotsingle is False, a fig must be supplied
+        '''
+        if plotsingle:
+            fig = plt.figure(figsize=(8,6))
+        fig.subplots_adjust(left=.2)
         gs = fig.add_gridspec(2,1, height_ratios=(7,2),left=.1,right=.9,bottom=.2,top=.9,hspace=.1)
         ax = fig.add_subplot(gs[0,0])
         resid_ax = fig.add_subplot(gs[1,0],sharex=ax)
@@ -143,18 +148,23 @@ class magphys_sed():
         resid_ax.set_ylabel('(obs-model)/obs')
         resid_ax.axhline(y=0,ls='--',color='k')
         resid_ax.set_ylim(-1,1)
-        plt.sca(ax)
-        resid_ax.set_xlabel(r'$Wavelength \ (\mu m) \ [observed \ frame]$',fontsize=14)
-        plt.ylabel(r'$log(\lambda L_\lambda/L_\odot) $',fontsize=14)        
-        plt.legend()#loc='lower left')
-        s = 'VFID{}: logMstar = {:.2f}, logSFR = {:.2f}'.format(self.galid,np.log10(self.mstar),np.log10(self.sfr))
-        plt.title(s.replace('VFIDVFID','VFID'),fontsize=14)
-        if self.galid.startswith('VFID'):
-            outfile = '{}-magphys-sed.png'.format(self.galid.rstrip())
-        else:
-            outfile = 'VFID{}-magphys-sed.png'.format(self.galid.rstrip())
+        #plt.sca(ax)
+        resid_ax.set_xlabel(r'$\rm Wavelength \ (\mu m) \ [observed \ frame]$',fontsize=14)
+        ax.set_ylabel(r'$\rm log(\lambda L_\lambda/L_\odot) $',fontsize=14)        
+        ax.legend()#loc='lower left')
+        s = 'VFID{}: logMstar = {:.2f}, logSFR = {:.2f}, Chi^2 = {:.2f}'.format(self.galid,np.log10(self.mstar),np.log10(self.sfr),self.chi2)        
+        ax.set_title(s.replace('VFIDVFID','VFID'),fontsize=14)
+
+        if plotsingle:
+
+
+            if self.galid.startswith('VFID'):
+                outfile = '{}-magphys-sed.png'.format(self.galid.rstrip())
+            else:
+                outfile = 'VFID{}-magphys-sed.png'.format(self.galid.rstrip())
         
-        plt.savefig(outfile)
+            plt.savefig(outfile)
+            
     def plot_sed_noresidual(self,plot_unattenuated=True):
         fig = plt.figure(figsize=(8,6))
         plt.subplots_adjust(left=.15)
@@ -216,6 +226,7 @@ class magphys_sed():
         e_flux = np.array(fit_lines[3].split(),'d') # error
         # not sure exactly what these are yet, except for z of course...
         i_sfh,i_ir,chi2,z = np.array(fit_lines[8].split(),'d')
+        self.chi2 = chi2
         fmu_sfh,fmu_ir,mu,tauv,ssfr,mstar,Ldust,T_W,T_C_ISM,\
             xi_Ctot,xi_PAHtot,xi_MIRtot,xi_Wtot,\
             tvism,Mdust,SFR = np.array(fit_lines[10].split(),'d')
@@ -300,8 +311,15 @@ class magphys_sed():
         outfile = 'VFID{}-mstar-sfr-pdfs.png'.format(self.galid)
         plt.savefig(outfile)
         
-    def plot_histograms(self):
-        ''' plot liklihood histograms of fitted parameters   '''
+    def plot_histograms(self,plotsingle=True,fig=None):
+        '''
+        plot liklihood histograms of fitted parameters   
+        
+        ARGS:
+        * plotsingle = default is True; makes a separate figure
+        * fig = default is None; if plotsingle=False, provie a figure
+
+        '''
 
         # following plot_sed.pro
         # make a 2x6 grid of histograms
@@ -323,34 +341,67 @@ class magphys_sed():
         SFR = parse_pdf(fit_lines[619:679])
         in1.close()
 
+        #print('fmu_SFR = ',fmu_SFR)
+        #print('fmu_IR = ',fmu_IR)        
         allhist = [fmu_SFR,fmu_IR,mu,tau_V,sSFR,Mstar,\
                    Ld_tot,Tc_ISM,Tw_BC,xi_C_tot,xi_W_tot,\
                    tau_V_ISM,Mdust,SFR]
         allhist_names = ['fmu_SFR','fmu_IR','mu','tau_V','sSFR','Mstar',\
                    'Ld_tot','Tc_ISM','Tw_BC','xi_C_tot','xi_W_tot',\
                    'tau_V_ISM','Mdust','SFR']
-        xlims = {'fmu_SFR':[0,1],'fmu_IR':[0,1],'mu':[0,1],'tau_V':[0,5],\
+
+        # reordering to match idl plotting function
+        fmu = 0.5*np.array(fmu_SFR,'d') + 0.5*np.array(fmu_IR,'d')
+        
+        allhist = [fmu,tau_V_ISM,tau_V,Mstar,sSFR,SFR,\
+                   Ld_tot,Mdust,Tc_ISM,Tw_BC,xi_C_tot,xi_W_tot]                   
+        allhist_names = ['fmu','tau_V_ISM','tau_V','Mstar','sSFR','SFR',\
+                         'Ld_tot','Mdust','Tc_ISM','Tw_BC','xi_C_tot','xi_W_tot']
+
+        allhist_labels = [r'$f_\mu$',r'$\tau_V^{ISM}$',r'$\mu \tau_V$',r'$M_{star}$','sSFR','SFR',\
+                         r'$L_{dust}$',r'$M_{dust}$',r'$T_c^{ISM}$',r'$T_w^{BC}$',r'$\xi_C^{tot}$',r'$\xi_W^{tot}$']
+
+        
+        xlims = {'fmu':[0,1],'fmu_SFR':[0,1],'fmu_IR':[0,1],'mu':[0,1],'tau_V':[0,5],\
                  'sSFR':[-12,-8],'Mstar':[7,11],\
                  'Ld_tot':[7,11],'Tc_ISM':[15,25],'Tw_BC':[30,60],\
                  'xi_C_tot':[0,1],'xi_W_tot':[0,1],\
                  'tau_V_ISM':[0,5],'Mdust':[2.5,10],'SFR':[-3,2]}
-        plt.figure(figsize=(8,6))
-        plt.subplots_adjust(wspace=.08,hspace=.25)
+        
+        if plotsingle:
+            fig = plt.figure(figsize=(8,6))
+        fig.subplots_adjust(left=.12,wspace=.2,hspace=.25)
         for i,h in enumerate(allhist):
-            plt.subplot(3,5,i+1)
+            fig.add_subplot(2,6,i+1)
             #t = plt.fill_between(h[0],h[1])
             t = plt.bar(h[0],h[1],width=h[0][1]-h[0][0])
-            plt.text(0.05,0.85,allhist_names[i],transform=plt.gca().transAxes,horizontalalignment='left')
+            plt.text(0.05,0.8,allhist_labels[i],transform=plt.gca().transAxes,horizontalalignment='left',fontsize=12)
             plt.ylim(0,1)
             plt.xlim(xlims[allhist_names[i]][0],xlims[allhist_names[i]][1])
-            if (i == 0) | (i == 5) | (i == 10) :
+            if (i == 0) | (i == 6):# | (i == 10) :
                 plt.yticks(np.linspace(0,1,3))
             else:
                 plt.yticks([])
 
+        if plotsingle:
+            if self.galid.startswith('VFID'):
+                outfile = '{}-magphys-pdfs.png'.format(self.galid.rstrip())
+            else:
+                outfile = 'VFID{}-magphys-pdfs.png'.format(self.galid.rstrip())
+            plt.savefig(outfile)
+
+    def plot_sed_pdfs(self,plot_unattenuated=True):
+        ''' plot SED and PDFs on one figure, like in idl program   '''
+        fig = plt.figure(figsize=(10,8))
+        subfigs = fig.subfigures(2,1,hspace=.07,height_ratios=[1.4,1])
+
+        self.plot_sed(plotsingle=False,fig=subfigs[0])
+
+        self.plot_histograms(plotsingle=False,fig=subfigs[1])
+        
         if self.galid.startswith('VFID'):
-            outfile = '{}-magphys-pdfs.png'.format(self.galid.rstrip())
+            outfile = '{}-magphys-sed-pdfs.png'.format(self.galid.rstrip())
         else:
-            outfile = 'VFID{}-magphys-pdfs.png'.format(self.galid.rstrip())
+            outfile = 'VFID{}-magphys-sed-pdfs.png'.format(self.galid.rstrip())
+        
         plt.savefig(outfile)
-        #return allhist

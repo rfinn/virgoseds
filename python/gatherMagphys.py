@@ -33,6 +33,7 @@ parser = argparse.ArgumentParser(description ='Gather output from magphys.')
 parser.add_argument('--plot',dest = 'plot', default=False,action='store_true',help='make plots of SED and pdf histograms.  This increases the execution time A LOT!!!  Default is false.')
 
 parser.add_argument('--magdir',dest = 'magdir', default='research/Virgo/magphys/magphysParallelGrawp/output/',help='directory to grab the magphys results from.  the default is HOMEDIR+research/Virgo/maphys/magphysParallelGrawp/output/')
+parser.add_argument('--id',dest = 'id', default=None, help='identifier for output table, like nozband or legacyExt or salimExt')
 
     
 args = parser.parse_args()
@@ -52,8 +53,12 @@ if testSample:
 else:
 
     output_table_dir = HOME+'/research/Virgo/tables-north/v2/'
-    output_table = output_table_dir+'/vf_v2_magphys_'+myDate+'.fits'
-    plotdir = HOME+'/research/Virgo/magphys/magphysParallelGrawp/plots/'
+    if args.id is not None:
+        output_table = output_table_dir+'/vf_v2_magphys_'+args.id+'_'+myDate+'.fits'
+        plotdir = HOME+'/research/Virgo/magphys/magphysParallelGrawp/plots_'+args.id+'/'
+    else:
+        output_table = output_table_dir+'/vf_v2_magphys_'+myDate+'.fits'
+        plotdir = HOME+'/research/Virgo/magphys/magphysParallelGrawp/plots/'
 
 magphys_output = os.path.join(HOME,args.magdir,'')
 
@@ -72,6 +77,7 @@ vfids = []
 vfid_numb = []
 sfrs  = []
 mstars = []
+chisq = []
 nmagphys = 0
 for d in dirlist:
     if d.startswith('job'):
@@ -86,20 +92,24 @@ for d in dirlist:
         nmagphys += 1
         if args.plot:
             s = sedFunctions.magphys_sed(d,effective_wavelengths)
-            s.plot_sed()
-            s.plot_histograms()
+            #s.plot_sed()
+            #s.plot_histograms()
+            s.plot_sed_pdfs()
             if d.startswith('VFID'):
                 sedplot = '{}-magphys-sed.png'.format(d)
                 histplot = '{}-magphys-pdfs.png'.format(d)
+                sed_pdfs_plot = '{}-magphys-sed-pdfs.png'.format(d)                
             else:
                 sedplot = 'VFID{}-magphys-sed.png'.format(d)
                 histplot = 'VFID{}-magphys-pdfs.png'.format(d)
+                sed_pdfs_plot = 'VFID{}-magphys-sed-pdfs.png'.format(d)                                
                 
-            os.rename(sedplot,os.path.join(plotdir,sedplot))
-            os.rename(histplot,os.path.join(plotdir,histplot)) 
+            #os.rename(sedplot,os.path.join(plotdir,sedplot))
+            #os.rename(histplot,os.path.join(plotdir,histplot))
+            os.rename(sed_pdfs_plot,os.path.join(plotdir,sed_pdfs_plot)) 
             plt.close('all')
-            sfrs.append(np.log10(s.sfr))
-            mstars.append(np.log10(s.mstar))
+            #sfrs.append(np.log10(s.sfr))
+            #mstars.append(np.log10(s.mstar))
             
         # gather outputs only
         # this is much faster
@@ -118,10 +128,10 @@ for d in dirlist:
             xi_Ctot,xi_PAHtot,xi_MIRtot,xi_Wtot,\
             tvism,Mdust,SFR = np.array(fit_lines[10].split(),'d')
             
-        if not args.plot:
-            # get sfr and mstars
-            sfrs.append(np.log10(SFR))
-            mstars.append(np.log10(mstar))
+        # get sfr and mstars
+        sfrs.append(np.log10(SFR))
+        mstars.append(np.log10(mstar))
+        chisq.append(chi2)        
 
         vfids.append(d)
         vfid_numb.append(int(d.replace('VFID','')))
@@ -138,9 +148,11 @@ VFID = ['VFID{:04d}'.format(i) for i in range(6780)]
 vfid_numb = np.array(vfid_numb,'i')
 vfid_sfr = np.zeros(len(VFID),'d')
 vfid_mstar = np.zeros(len(VFID),'d')
+vfid_chisq = np.zeros(len(VFID),'d')
 vfid_sfr[vfid_numb]=sfrs
 vfid_mstar[vfid_numb]=mstars
-tab = Table([VFID,vfid_sfr,vfid_mstar],names=['VFID','logSFR','logMstar'])
+vfid_chisq[vfid_numb]=chisq
+tab = Table([VFID,vfid_sfr,vfid_mstar,vfid_chisq],names=['VFID','logSFR','logMstar','chisq'])
 
 
 
