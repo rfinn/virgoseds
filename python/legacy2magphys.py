@@ -112,10 +112,7 @@ if writeFilterFiles:
 
 
 ##########################################################################################
-###  John suggested using surface brightness magnitudes
-###  this is what we are doing
-###  but we scale the sb fluxes by a factor
-###  based on how the total magnitudes from COG compare with sb mag
+#### USE AP06 FLUXES TO FEED INTO MAGPHYS
 ##########################################################################################
 
 #sb2fit = (args.sbmag) # could be 23, 24, 25, 26
@@ -139,8 +136,6 @@ ephot = Table(mef_table['ELLIPSE'].data) # first hdu is the elliptical photometr
 ephot1 = Table(mef_table['PARENT'].data) # this one has RA and DEC, which we need to separate N and S
 mef_table.close()
 
-
-
 # convert fluxes from nmgy to Jy
 flux_Jy = np.zeros((len(ephot),len(filters)),'d')
 err_Jy = np.zeros((len(ephot),len(filters)),'d')
@@ -148,9 +143,6 @@ err_Jy = np.zeros((len(ephot),len(filters)),'d')
 
 for i,f in enumerate(fluxes):
     flux_Jy[:,i] = ephot[f]*3.631e-6 # convert from nanomaggy to Jy
-    #print(mtots[i])
-    #print(ephot[mtots[i]])
-
 
 for i,f in enumerate(ivars):
     flag =  ephot[f] > 0
@@ -178,7 +170,10 @@ for i,f in enumerate(ivars):
 input_sb_colname = []
 input_sb = []
 ApFluxInput = np.zeros(len(ephot),'bool')
+
 for i in range(len(ephot)):
+    # set all to AP06 r-band flux
+    # will adjust this below for galaxies with zero AP06 flux
     input_sb_colname.append('FLUX_AP06_R')
     input_sb.append(6)    
 
@@ -189,7 +184,7 @@ zeroIndices = np.arange(len(ephot))[zeroRfluxFlag]
 print('number of galaxies with AP06 == 0 is {}'.format(len(zeroIndices)))
 
 # search through alternate fluxes to find a valid one
-# ordering in terms of SB mags with highest completeness
+# ordering in terms of apertures with highest the completeness
 possible_aps = [5,4,7,8,3,2,1]    
 nbadR = 0
 for i in zeroIndices:
@@ -208,7 +203,7 @@ for i in zeroIndices:
             input_sb_colname[i] = colname
             input_sb[i] = m            
 
-            # set all fluxes to this SB for this galaxy
+            # set all fluxes to this aperture for this galaxy
             for j,f in enumerate(filters):
 
                 colname = 'FLUX_AP{:02d}_{}'.format(m,f)
@@ -360,9 +355,6 @@ for i in range(len(ephot)):
     redshift[i] = vfmain['vr'][vfindex]/3.e5 # divide by speed of light to convert recession velocity to redshift
 
 
-
-
-
 ###########################################################
 # create output table
 # ID redshift flux_0 flux_0_err flux_1 flux_1_err ...
@@ -381,7 +373,7 @@ for i in range(len(filters)):
         if int(args.ext) == 1:
             ecolname = f'A({filters[i]})_SFD'
         elif int(args.ext) == 2:
-            # can change suffice to _S16 to use extinction law use in Salim+2016
+            # can change suffix to _S16 to use extinction law use in Salim+2016
             ecolname = f'A({filters[i]})_S16'
         else:
             print('Extinction selection is not valid.  Needs to be [0,1,2] for [none,legacy,salim]')
@@ -424,9 +416,9 @@ elif int(args.ext) == 2:
 out_table[~north_flag].write(outfile,format='ascii',overwrite=True,names=colnames)
 
 
-nsf_flag = ephot1['VFID'] == 'VFID1778'
-outfile = '/home/rfinn/research/Virgo/legacy-phot/NSF2021VFID1778.dat'
-out_table[nsf_flag].write(outfile,format='ascii',overwrite=True,names=colnames)
+#nsf_flag = ephot1['VFID'] == 'VFID1778'
+#outfile = '/home/rfinn/research/Virgo/legacy-phot/NSF2021VFID1778.dat'
+#out_table[nsf_flag].write(outfile,format='ascii',overwrite=True,names=colnames)
 # writing out the first galaxy, bc this is the only one with all non-zero fluxes at sb=23
 #outfile = '/home/rfinn/research/Virgo/legacy-phot/magphysInput-gal1.dat'
 #ptab = Table(out_table[0])

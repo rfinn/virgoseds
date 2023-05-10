@@ -358,8 +358,8 @@ class magphys_sed():
         allhist_names = ['fmu','tau_V_ISM','tau_V','Mstar','sSFR','SFR',\
                          'Ld_tot','Mdust','Tc_ISM','Tw_BC','xi_C_tot','xi_W_tot']
 
-        allhist_labels = [r'$f_\mu$',r'$\tau_V^{ISM}$',r'$\mu \tau_V$',r'$M_{star}$','sSFR','SFR',\
-                         r'$L_{dust}$',r'$M_{dust}$',r'$T_c^{ISM}$',r'$T_w^{BC}$',r'$\xi_C^{tot}$',r'$\xi_W^{tot}$']
+        allhist_labels = [r'$f_\mu$',r'$\tau_V^{ISM}$',r'$\mu \tau_V$',r'$log(M_{star})$','log(sSFR)','log(SFR)',\
+                         r'$log(L_{dust})$',r'$log(M_{dust})$',r'$T_c^{ISM}$',r'$T_w^{BC}$',r'$\xi_C^{tot}$',r'$\xi_W^{tot}$']
 
         
         xlims = {'fmu':[0,1],'fmu_SFR':[0,1],'fmu_IR':[0,1],'mu':[0,1],'tau_V':[0,5],\
