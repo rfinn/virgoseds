@@ -8,6 +8,7 @@ GOAL:
   * the SED and PDF plots
   * a file with one line per vf v2 galaxy, with Mstar and SFR for each galaxy 
 
+* the output table is written to ~/research/Virgo/tables-north/v2/
 '''
 import os
 import glob
@@ -38,7 +39,7 @@ def parse_percentile(line):
 #### SET UP ARGPARSE
 ###################################################################
 
-parser = argparse.ArgumentParser(description ='Gather output from magphys.')
+parser = argparse.ArgumentParser(description ='Gather output from magphys. Write output table to ~/research/Virgo/tables-north/v2/')
 parser.add_argument('--plot',dest = 'plot', default=False,action='store_true',help='make plots of SED and pdf histograms.  This increases the execution time A LOT!!!  Default is false.')
 
 parser.add_argument('--magdir',dest = 'magdir', default='research/Virgo/magphys/magphysParallelGrawp/output/',help='directory to grab the magphys results from.  the default is HOMEDIR+research/Virgo/maphys/magphysParallelGrawp/output/')
@@ -140,6 +141,8 @@ for d in dirlist:
         # but this is really a luminosity, or luminosity density?
         flux = np.array(fit_lines[2].split(),'d') # observed L
         e_flux = np.array(fit_lines[3].split(),'d') # error
+
+        # this is the output from the best-fit model
         # not sure exactly what these are yet, except for z of course...
         i_sfh,i_ir,chi2,z = np.array(fit_lines[8].split(),'d')
         fmu_sfh,fmu_ir,mu,tauv,ssfr,mstar,Ldust,T_W,T_C_ISM,\
@@ -150,7 +153,7 @@ for d in dirlist:
         ######################################################        
         # Get the percentiles of the pdfs for SFR and Mstar
         # percentiles are given in the line after the pdf
-        # percentiles: 2.5, 14, 50, 68, 97.5
+        # percentiles: 2.5, 14, 50, 86, 97.5
         ######################################################
 
         # this code is copied from sedFunctions.py
@@ -191,6 +194,11 @@ for d in dirlist:
         # get sfr and mstars
         sfrs.append(np.log10(SFR))
         mstars.append(np.log10(mstar))
+
+        # not sure if this is already logged or not
+        # it is not logged, so need to log it
+        ssfrs.append(np.log10(ssfr))
+        
         chisq.append(chi2)        
 
         vfids.append(d)
@@ -203,15 +211,15 @@ print('max directory = ',lastdir)
 print('number processed = ',nmagphys)
 sfrs = np.array(sfrs,'d')
 mstars = np.array(mstars,'d')
-ssfrs = np.array(sfrs,'d')
+ssfrs = np.array(ssfrs,'d')
 
 sfrs_med = np.array(sfrs_med,'d')
 mstars_med = np.array(mstars_med,'d')
-ssfrs_med = np.array(sfrs_med,'d')
+ssfrs_med = np.array(ssfrs_med,'d')
 
 sfrs_perc = np.array(sfrs_percent,'d')
 mstars_perc = np.array(mstars_percent,'d')
-ssfrs_perc = np.array(sfrs_percent,'d')
+ssfrs_perc = np.array(ssfrs_percent,'d')
 
 # make table row-lined to
 VFID = ['VFID{:04d}'.format(i) for i in range(6780)]
