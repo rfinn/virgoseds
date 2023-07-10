@@ -129,7 +129,10 @@ mtots = ['COG_MTOT_{}'.format(f) for f in filters]
 
 
 # updating for v2, which is almost the entire catalog
-photfile = '/home/rfinn/research/Virgo/legacy-phot/virgofilaments-v2-legacyphot.fits'
+#photfile = '/home/rfinn/research/Virgo/legacy-phot/virgofilaments-v2-legacyphot.fits'
+
+# updating 2023-07-10 for v3, which is the final catalog
+photfile = '/home/rfinn/research/Virgo/legacy-phot/virgofilaments-v3-legacyphot.fits'
 mef_table = fits.open(photfile)
 # extensions are ['PARENT','ELLIPSE','TRACTOR']
 ephot = Table(mef_table['ELLIPSE'].data) # first hdu is the elliptical photometry
