@@ -32,7 +32,7 @@ def parse_percentile(line):
     '''split percentile line, return med and 68% conf interval  ''' 
     t = line.split()
     #print(t)
-    return t[3],t[1],t[4]
+    return float(t[3]),float(t[1]),float(t[4])
 
 
 ###################################################################
@@ -87,16 +87,72 @@ dirlist.sort()
 # get ready to gather sfr and mstar results
 vfids = []
 vfid_numb = []
-sfrs  = []
-ssfrs  = []
-mstars = []
-sfrs_percent  = []
-ssfrs_percent  = []
-mstars_percent = []
-sfrs_med  = []
-ssfrs_med  = []
-mstars_med = []
-chisq = []
+
+
+# save the parameters from the best-fit models
+sfr_best  = []
+ssfr_best  = []
+mstar_best = []
+fmuSFR_best = []
+fmuIR_best = []
+mu_best = []
+tau_V_best = []
+Ld_tot_best = []
+Tc_ISM_best = []
+Tw_BC_best = []
+xi_C_tot_best = []
+xi_PAH_tot_best = []
+xi_MIR_tot_best = []
+xi_W_tot_best = []
+tau_V_ISM_best = []
+Mdust_best = []
+chisq_best = []
+
+
+# parameters from pdf
+sfr_med  = []
+ssfr_med  = []
+mstar_med = []
+
+# additional parameters that we haven't been tracking
+fmuSFR_med = []
+fmuIR_med = []
+mu_med = []
+tau_V_med = []
+Ld_tot_med = []
+Tc_ISM_med = []
+Tw_BC_med = []
+xi_C_tot_med = []
+xi_PAH_tot_med = []
+xi_MIR_tot_med = []
+xi_W_tot_med = []
+tau_V_ISM_med = []
+Mdust_med = []
+
+
+# store the 68% conf interval from the pdf
+sfr_percent  = []
+ssfr_percent  = []
+mstar_percent = []
+            
+fmuSFR_percent = []
+fmuIR_percent = []
+mu_percent = []
+tau_V_percent = []
+Ld_tot_percent = []
+Tc_ISM_percent = []
+Tw_BC_percent = []
+xi_C_tot_percent = []
+xi_PAH_tot_percent = []
+xi_MIR_tot_percent = []
+xi_W_tot_percent = []
+tau_V_ISM_percent = []
+Mdust_percent = []
+
+            
+
+
+
 nmagphys = 0
 for d in dirlist:
     if d.startswith('job'):
@@ -149,6 +205,31 @@ for d in dirlist:
             xi_Ctot,xi_PAHtot,xi_MIRtot,xi_Wtot,\
             tvism,Mdust,SFR = np.array(fit_lines[10].split(),'d')
 
+
+        # get sfr and mstars
+        sfr_best.append(np.log10(SFR))
+        mstar_best.append(np.log10(mstar))
+
+        # not sure if this is already logged or not
+        # it is not logged, so need to log it
+        ssfr_best.append(np.log10(ssfr))
+
+        fmuSFR_best.append(fmu_sfh)
+        fmuIR_best.append(fmu_ir)
+        mu_best.append(mu)
+        tau_V_best.append(tauv)
+        Ld_tot_best.append(Ldust)
+        Tc_ISM_best.append(T_C_ISM)
+        Tw_BC_best.append(T_W)
+        xi_C_tot_best.append(xi_Ctot)
+        xi_PAH_tot_best.append(xi_PAHtot)
+        xi_MIR_tot_best.append(xi_MIRtot)        
+        xi_W_tot_best.append(xi_Wtot)
+        tau_V_ISM_best.append(tvism)
+        Mdust_best.append(Mdust)
+        
+        chisq_best.append(chi2)        
+        
         
         ######################################################        
         # Get the percentiles of the pdfs for SFR and Mstar
@@ -160,46 +241,85 @@ for d in dirlist:
         # leaving all parameters here in case we want to add additional output
         
         #fmu_SFR = parse_pdf(fit_lines[16:36])
+        t = parse_percentile(fit_lines[37])
+        fmuSFR_med.append(float(t[0]))        
+        fmuSFR_percent.append(np.array(t[1:]))
+        
         #fmu_IR = parse_pdf(fit_lines[39:59])
+        t = parse_percentile(fit_lines[60])
+        fmuIR_med.append(float(t[0]))        
+        fmuIR_percent.append(np.array(t[1:]))
+
         #mu = parse_pdf(fit_lines[62:82])
+        t = parse_percentile(fit_lines[83])
+        mu_med.append(float(t[0]))        
+        mu_percent.append(np.array(t[1:]))
+        
         #tau_V = parse_pdf(fit_lines[85:133])
+        t = parse_percentile(fit_lines[134])
+        tau_V_med.append(float(t[0]))        
+        tau_V_percent.append(np.array(t[1:]))
 
         #sSFR = parse_pdf(fit_lines[136:206])
         t = parse_percentile(fit_lines[207])
-        ssfrs_med.append(float(t[0]))        
-        ssfrs_percent.append(np.array(t[1:]))
+        ssfr_med.append(float(t[0]))
+        ssfr_percent.append(np.array(t[1:]))
 
         #Mstar = parse_pdf(fit_lines[209:269])
         t = parse_percentile(fit_lines[270])        
-        mstars_med.append(float(t[0]))
-        mstars_percent.append(np.array(t[1:]))
-
+        mstar_med.append(float(t[0]))
+        mstar_percent.append(np.array(t[1:]))
 
         #Ld_tot = parse_pdf(fit_lines[272:332])
-        #Tc_ISM = parse_pdf(fit_lines[335:345])
-        #Tw_BC = parse_pdf(fit_lines[348:378])
-        #xi_C_tot = parse_pdf(fit_lines[381:401])
-        #xi_W_tot = parse_pdf(fit_lines[450:470])
-        #tau_V_ISM = parse_pdf(fit_lines[473:553])
-        #Mdust = parse_pdf(fit_lines[556:616])                
-
-        #SFR = parse_pdf(fit_lines[619:679])
-            
-        t = parse_percentile(fit_lines[680])
-        sfrs_med.append(float(t[0]))                    
-        sfrs_percent.append(t[1:])
-            
-
-            
-        # get sfr and mstars
-        sfrs.append(np.log10(SFR))
-        mstars.append(np.log10(mstar))
-
-        # not sure if this is already logged or not
-        # it is not logged, so need to log it
-        ssfrs.append(np.log10(ssfr))
+        t = parse_percentile(fit_lines[333])        
+        Ld_tot_med.append(float(t[0]))
+        Ld_tot_percent.append(np.array(t[1:]))
         
-        chisq.append(chi2)        
+        #Tc_ISM = parse_pdf(fit_lines[335:345])
+        t = parse_percentile(fit_lines[346])
+        Tc_ISM_med.append(float(t[0]))
+        Tc_ISM_percent.append(np.array(t[1:]))
+
+        
+        #Tw_BC = parse_pdf(fit_lines[348:378])
+        t = parse_percentile(fit_lines[379])
+        Tw_BC_med.append(float(t[0]))
+        Tw_BC_percent.append(np.array(t[1:]))
+        
+        #xi_C_tot = parse_pdf(fit_lines[381:401])
+        t = parse_percentile(fit_lines[402])
+        xi_C_tot_med.append(float(t[0]))
+        xi_C_tot_percent.append(np.array(t[1:]))
+
+        # PAH
+        t = parse_percentile(fit_lines[425])
+        xi_PAH_tot_med.append(float(t[0]))
+        xi_PAH_tot_percent.append(np.array(t[1:]))
+
+        # MIR - hadn't been tracking these...
+        t = parse_percentile(fit_lines[448])
+        xi_MIR_tot_med.append(float(t[0]))
+        xi_MIR_tot_percent.append(np.array(t[1:]))
+        
+        #xi_W_tot = parse_pdf(fit_lines[450:470])
+        t = parse_percentile(fit_lines[471])
+        xi_W_tot_med.append(float(t[0]))
+        xi_W_tot_percent.append(np.array(t[1:]))
+        
+        #tau_V_ISM = parse_pdf(fit_lines[473:553])
+        t = parse_percentile(fit_lines[554])
+        tau_V_ISM_med.append(float(t[0]))
+        tau_V_ISM_percent.append(np.array(t[1:]))
+        
+        #Mdust = parse_pdf(fit_lines[556:616])                
+        t = parse_percentile(fit_lines[617])
+        Mdust_med.append(float(t[0]))
+        Mdust_percent.append(np.array(t[1:]))
+
+        #SFR = parse_pdf(fit_lines[619:679]) 
+        t = parse_percentile(fit_lines[680])
+        sfr_med.append(float(t[0]))
+        sfr_percent.append(np.array(t[1:]))
 
         vfids.append(d)
         vfid_numb.append(int(d.replace('VFID','')))
@@ -209,67 +329,200 @@ for d in dirlist:
 
 print('max directory = ',lastdir)
 print('number processed = ',nmagphys)
-sfrs = np.array(sfrs,'d')
-mstars = np.array(mstars,'d')
-ssfrs = np.array(ssfrs,'d')
 
-sfrs_med = np.array(sfrs_med,'d')
-mstars_med = np.array(mstars_med,'d')
-ssfrs_med = np.array(ssfrs_med,'d')
+## ugh, this is terrible.  I'm sure there is a smarter way to write out a million columns...
 
-sfrs_perc = np.array(sfrs_percent,'d')
-mstars_perc = np.array(mstars_percent,'d')
-ssfrs_perc = np.array(ssfrs_percent,'d')
-
-# make table row-lined to
+# make table row-matched v2 tables
 VFID = ['VFID{:04d}'.format(i) for i in range(6780)]
-vfid_numb = np.array(vfid_numb,'i')
-vfid_ssfr = np.zeros(len(VFID),'d')
-vfid_sfr = np.zeros(len(VFID),'d')
-vfid_mstar = np.zeros(len(VFID),'d')
-
 magphys_flag = np.zeros(len(VFID),'bool')
 
-vfid_ssfr_percent = np.zeros((len(VFID),2),'d')
-vfid_sfr_percent = np.zeros((len(VFID),2),'d')
-vfid_mstar_percent = np.zeros((len(VFID),2),'d')
+vfid_numb = np.array(vfid_numb,'i')
+
+# best-fit parameters
+vfid_ssfr_best = np.zeros(len(VFID),'d')
+vfid_sfr_best = np.zeros(len(VFID),'d')
+vfid_mstar_best = np.zeros(len(VFID),'d')
+vfid_fmuSFR_best = np.zeros(len(VFID),'d')
+vfid_fmuIR_best = np.zeros(len(VFID),'d')
+vfid_mu_best = np.zeros(len(VFID),'d')
+vfid_tau_V_best = np.zeros(len(VFID),'d')
+vfid_Ld_tot_best = np.zeros(len(VFID),'d')
+vfid_Tc_ISM_best = np.zeros(len(VFID),'d')
+vfid_Tw_BC_best = np.zeros(len(VFID),'d')
+vfid_xi_C_tot_best = np.zeros(len(VFID),'d')
+vfid_xi_PAH_tot_best = np.zeros(len(VFID),'d')
+vfid_xi_MIR_tot_best = np.zeros(len(VFID),'d')
+vfid_xi_W_tot_best = np.zeros(len(VFID),'d')
+vfid_tau_V_ISM_best = np.zeros(len(VFID),'d')
+vfid_Mdust_best = np.zeros(len(VFID),'d')
+vfid_chisq_best = np.zeros(len(VFID),'d')
+
+
+vfid_sfr_best[vfid_numb] = np.array(sfr_best,'d')
+vfid_ssfr_best[vfid_numb] = np.array(ssfr_best,'d')
+vfid_mstar_best[vfid_numb] = np.array(mstar_best,'d')
+vfid_chisq_best[vfid_numb] = np.array(chisq_best,'d')
+vfid_fmuSFR_best[vfid_numb] = np.array(fmuSFR_best,'d')
+vfid_fmuIR_best[vfid_numb] = np.array(fmuIR_best,'d')
+vfid_mu_best[vfid_numb] = np.array(mu_best,'d')
+vfid_tau_V_best[vfid_numb] = np.array(tau_V_best,'d')
+vfid_Ld_tot_best[vfid_numb] = np.array(Ld_tot_best,'d')
+vfid_Tc_ISM_best[vfid_numb] = np.array(Tc_ISM_best,'d')
+vfid_Tw_BC_best[vfid_numb] = np.array(Tw_BC_best,'d')
+vfid_xi_C_tot_best[vfid_numb] = np.array(xi_C_tot_best,'d')
+vfid_xi_PAH_tot_best[vfid_numb] = np.array(xi_PAH_tot_best,'d')
+vfid_xi_MIR_tot_best[vfid_numb] = np.array(xi_MIR_tot_best,'d')
+vfid_xi_W_tot_best[vfid_numb] = np.array(xi_W_tot_best,'d')
+vfid_tau_V_ISM_best[vfid_numb] = np.array(tau_V_ISM_best,'d')
+vfid_Mdust_best[vfid_numb] = np.array(Mdust_best,'d')
+
+
+# median parameters
 
 vfid_ssfr_med = np.zeros(len(VFID),'d')
 vfid_sfr_med = np.zeros(len(VFID),'d')
 vfid_mstar_med = np.zeros(len(VFID),'d')
+vfid_fmuSFR_med = np.zeros(len(VFID),'d')
+vfid_fmuIR_med = np.zeros(len(VFID),'d')
+vfid_mu_med = np.zeros(len(VFID),'d')
+vfid_tau_V_med = np.zeros(len(VFID),'d')
+vfid_Ld_tot_med = np.zeros(len(VFID),'d')
+vfid_Tc_ISM_med = np.zeros(len(VFID),'d')
+vfid_Tw_BC_med = np.zeros(len(VFID),'d')
+vfid_xi_C_tot_med = np.zeros(len(VFID),'d')
+vfid_xi_PAH_tot_med = np.zeros(len(VFID),'d')
+vfid_xi_MIR_tot_med = np.zeros(len(VFID),'d')
+vfid_xi_W_tot_med = np.zeros(len(VFID),'d')
+vfid_tau_V_ISM_med = np.zeros(len(VFID),'d')
+vfid_Mdust_med = np.zeros(len(VFID),'d')
 
-vfid_chisq = np.zeros(len(VFID),'d')
 
-vfid_sfr[vfid_numb]=sfrs
-vfid_ssfr[vfid_numb]=ssfrs
-vfid_mstar[vfid_numb]=mstars
-vfid_chisq[vfid_numb]=chisq
+
+vfid_sfr_med[vfid_numb] = np.array(sfr_med,'d')
+vfid_ssfr_med[vfid_numb] = np.array(ssfr_med,'d')
+vfid_mstar_med[vfid_numb] = np.array(mstar_med,'d')
+vfid_fmuSFR_med[vfid_numb] = np.array(fmuSFR_med,'d')
+vfid_fmuIR_med[vfid_numb] = np.array(fmuIR_med,'d')
+vfid_mu_med[vfid_numb] = np.array(mu_med,'d')
+vfid_tau_V_med[vfid_numb] = np.array(tau_V_med,'d')
+vfid_Ld_tot_med[vfid_numb] = np.array(Ld_tot_med,'d')
+vfid_Tc_ISM_med[vfid_numb] = np.array(Tc_ISM_med,'d')
+vfid_Tw_BC_med[vfid_numb] = np.array(Tw_BC_med,'d')
+vfid_xi_C_tot_med[vfid_numb] = np.array(xi_C_tot_med,'d')
+vfid_xi_PAH_tot_med[vfid_numb] = np.array(xi_PAH_tot_med,'d')
+vfid_xi_MIR_tot_med[vfid_numb] = np.array(xi_MIR_tot_med,'d')
+vfid_xi_W_tot_med[vfid_numb] = np.array(xi_W_tot_med,'d')
+vfid_tau_V_ISM_med[vfid_numb] = np.array(tau_V_ISM_med,'d')
+vfid_Mdust_med[vfid_numb] = np.array(Mdust_med,'d')
+
+
+
+# median percent
+
+vfid_ssfr_percent = np.zeros((len(VFID),2),'d')
+vfid_sfr_percent = np.zeros((len(VFID),2),'d')
+vfid_mstar_percent = np.zeros((len(VFID),2),'d')
+vfid_fmuSFR_percent = np.zeros((len(VFID),2),'d')
+vfid_fmuIR_percent = np.zeros((len(VFID),2),'d')
+vfid_mu_percent = np.zeros((len(VFID),2),'d')
+vfid_tau_V_percent = np.zeros((len(VFID),2),'d')
+vfid_Ld_tot_percent = np.zeros((len(VFID),2),'d')
+vfid_Tc_ISM_percent = np.zeros((len(VFID),2),'d')
+vfid_Tw_BC_percent = np.zeros((len(VFID),2),'d')
+vfid_xi_C_tot_percent = np.zeros((len(VFID),2),'d')
+vfid_xi_PAH_tot_percent = np.zeros((len(VFID),2),'d')
+vfid_xi_MIR_tot_percent = np.zeros((len(VFID),2),'d')
+vfid_xi_W_tot_percent = np.zeros((len(VFID),2),'d')
+vfid_tau_V_ISM_percent = np.zeros((len(VFID),2),'d')
+vfid_Mdust_percent = np.zeros((len(VFID),2),'d')
+
+
+
+vfid_sfr_percent[vfid_numb] = np.array(sfr_percent,'d')
+vfid_ssfr_percent[vfid_numb] = np.array(ssfr_percent,'d')
+vfid_mstar_percent[vfid_numb] = np.array(mstar_percent,'d')
+vfid_fmuSFR_percent[vfid_numb] = np.array(fmuSFR_percent,'d')
+vfid_fmuIR_percent[vfid_numb] = np.array(fmuIR_percent,'d')
+vfid_mu_percent[vfid_numb] = np.array(mu_percent,'d')
+vfid_tau_V_percent[vfid_numb] = np.array(tau_V_percent,'d')
+vfid_Ld_tot_percent[vfid_numb] = np.array(Ld_tot_percent,'d')
+vfid_Tc_ISM_percent[vfid_numb] = np.array(Tc_ISM_percent,'d')
+vfid_Tw_BC_percent[vfid_numb] = np.array(Tw_BC_percent,'d')
+vfid_xi_C_tot_percent[vfid_numb] = np.array(xi_C_tot_percent,'d')
+vfid_xi_PAH_tot_percent[vfid_numb] = np.array(xi_PAH_tot_percent,'d')
+vfid_xi_MIR_tot_percent[vfid_numb] = np.array(xi_MIR_tot_percent,'d')
+vfid_xi_W_tot_percent[vfid_numb] = np.array(xi_W_tot_percent,'d')
+vfid_tau_V_ISM_percent[vfid_numb] = np.array(tau_V_ISM_percent,'d')
+vfid_Mdust_percent[vfid_numb] = np.array(Mdust_percent,'d')
+
+
+
+
+
+
+
+
+
+
+
 
 magphys_flag[vfid_numb] = np.ones(len(vfid_numb),'bool')
 
-vfid_ssfr_med[vfid_numb]=ssfrs_med
-vfid_sfr_med[vfid_numb]=sfrs_med
-vfid_mstar_med[vfid_numb]=mstars_med
-
-
-vfid_ssfr_percent[vfid_numb]=ssfrs_perc
-vfid_sfr_percent[vfid_numb]=sfrs_perc
-vfid_mstar_percent[vfid_numb]=mstars_perc
 
 
 
 data_columns = [VFID,\
-                vfid_sfr,vfid_sfr_med, vfid_sfr_percent,\
-                vfid_mstar,vfid_mstar_med,vfid_mstar_percent,\
-                vfid_ssfr,vfid_ssfr_med, vfid_ssfr_percent,\
-                vfid_chisq,magphys_flag]
+                vfid_mstar_med,vfid_sfr_med,vfid_ssfr_med,\
+                vfid_fmuSFR_med, vfid_fmuIR_med, vfid_mu_med,\
+                vfid_tau_V_med, vfid_Ld_tot_med,\
+                vfid_Tc_ISM_med, vfid_Tw_BC_med,\
+                vfid_xi_C_tot_med, vfid_xi_PAH_tot_med,\
+                vfid_xi_MIR_tot_med, vfid_xi_W_tot_med,\
+                vfid_tau_V_ISM_med,vfid_Mdust_med,\
+                
+                vfid_mstar_percent,vfid_sfr_percent,vfid_ssfr_percent,\
+                vfid_fmuSFR_percent, vfid_fmuIR_percent, vfid_mu_percent,\
+                vfid_tau_V_percent, vfid_Ld_tot_percent,\
+                vfid_Tc_ISM_percent, vfid_Tw_BC_percent,\
+                vfid_xi_C_tot_percent, vfid_xi_PAH_tot_percent,\
+                vfid_xi_MIR_tot_percent, vfid_xi_W_tot_percent,\
+                vfid_tau_V_ISM_percent,vfid_Mdust_percent,\
+                
+                vfid_mstar_best,vfid_sfr_best,vfid_ssfr_best,\
+                vfid_fmuSFR_best, vfid_fmuIR_best, vfid_mu_best,\
+                vfid_tau_V_best, vfid_Ld_tot_best,\
+                vfid_Tc_ISM_best, vfid_Tw_BC_best,\
+                vfid_xi_C_tot_best, vfid_xi_PAH_tot_best,\
+                vfid_xi_MIR_tot_best, vfid_xi_W_tot_best,\
+                vfid_tau_V_ISM_best,vfid_Mdust_best,\
+                vfid_chisq_best,magphys_flag]
+
 
 names=['VFID',
-       'logSFR','logSFR-med','logSFR-68conf',\
-       'logMstar','logMstar-med','logMstar-68conf',\
-       'logsSFR','logsSFR-med','logsSFR-68conf',\
-       'chisq','magphysFlag']
+       'logMstar_med','logSFR_med','logsSFR_med',\
+       'fmu_SFR_med','fmu_IR_med','mu_med',\
+       'tau_V_med','Ldust_tot_med',\
+       'Tc_ISM_med','Tw_BC_med',\
+       'xi_C_tot_med','xi_PAH_tot_med','xi_MIR_tot_med','xi_W_tot_med',\
+       'tau_V_ISM_med','Mdust_med',\
+       
+       'logMstar_percent','logSFR_percent','logsSFR_percent',\
+       'fmu_SFR_percent','fmu_IR_percent','mu_percent',\
+       'tau_V_percent','Ldust_tot_percent',\
+       'Tc_ISM_percent','Tw_BC_percent',\
+       'xi_C_tot_percent','xi_PAH_tot_percent','xi_MIR_tot_percent','xi_W_tot_percent',\
+       'tau_V_ISM_percent','Mdust_percent',\
+       
+       'logMstar_best','logSFR_best','logsSFR_best',\
+       'fmu_SFR_best','fmu_IR_best','mu_best',\
+       'tau_V_best','Ldust_tot_best',\
+       'Tc_ISM_best', 'Tw_BC_best',\
+       'xi_C_tot_best','xi_PAH_tot_best','xi_MIR_tot_best','xi_W_tot_best',\
+       'tau_V_ISM_best','Mdust_best',\
+       
+       'chisq_best','magphysFlag']
 
+print('length of columns and names = ',len(data_columns),len(names))
 tab = Table(data=data_columns,names=names)
 
 

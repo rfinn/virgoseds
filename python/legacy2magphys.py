@@ -133,6 +133,9 @@ mtots = ['COG_MTOT_{}'.format(f) for f in filters]
 
 # updating 2023-07-10 for v3, which is the final catalog
 photfile = '/home/rfinn/research/Virgo/legacy-phot/virgofilaments-v3-legacyphot.fits'
+
+# updating 2024-02-11 to use JM's catalog after fixing bug with B/A
+photfile = '/home/rfinn/research/Virgo/legacy-phot/virgofilaments-v3b-legacyphot.fits'
 mef_table = fits.open(photfile)
 # extensions are ['PARENT','ELLIPSE','TRACTOR']
 ephot = Table(mef_table['ELLIPSE'].data) # first hdu is the elliptical photometry
@@ -341,6 +344,17 @@ else:
 #vffile = '/home/rfinn/research/Virgo/tables-north/v1/vf_north_v1_main.fits'
 vffile = '/home/rfinn/research/Virgo/tables-north/v2/vf_v2_main.fits'
 vfmain = Table.read(vffile)
+
+# reading this in case we want to use Vmodel rather than vr
+#vffile = '/home/rfinn/research/Virgo/tables-north/v2/vf_v2_environment.fits'
+#vfenv = Table.read(vffile)
+
+
+# the plot of Vmodel vs vr shows big caustics near virgo
+# we will need to correct these galaxies.
+# would rather do that after running magphys
+#velocity = vmain['vr'
+
 
 # use this file to get the E(B-V) values
 vffile = '/home/rfinn/research/Virgo/tables-north/v2/vf_v2_extinction.fits'
