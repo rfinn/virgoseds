@@ -72,7 +72,7 @@ s.plot_sed_pdfs()
 #os.rename(sedplot,os.path.join(plotdir,sedplot))
 #os.rename(histplot,os.path.join(plotdir,histplot))
 #os.rename(sed_pdfs_plot,sed_pdfs_plot) 
-plt.close('all')
+#plt.close('all')
 
     
 os.chdir(data_dir)
