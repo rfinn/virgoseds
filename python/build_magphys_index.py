@@ -112,7 +112,7 @@ class build_html_coadd():
         #print('galnames = ',self.galnames)
         galindex = 1
         for i,g in enumerate(self.galnames):
-            print(g)
+            #print(g)
             jpg_path = os.path.join(self.outdir,'r-coadd.png')
             
             self.html.write('<tr>')
