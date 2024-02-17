@@ -64,7 +64,7 @@ else:
     print("making plot")
 
 
-s = sedFunctions.magphys_sed(sed_file,fit_file,effective_wavelengths)
+s = sedFunctions.magphys_sed(sed_file,fit_file,effective_wavelengths,galid=galid)
 #s.plot_sed()
 #s.plot_histograms()
 s.plot_sed_pdfs()
