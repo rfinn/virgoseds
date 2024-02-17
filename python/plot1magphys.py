@@ -32,7 +32,7 @@ sys.path.append(code_dir)
 import sedFunctions
 # move to data directory
 #os.chdir(data_dir)
-
+overwrite = True
 os.chdir(data_dir+'/'+galid)
 
 sed_file = '{}.sed'.format(galid)
