@@ -52,8 +52,8 @@ files = [sedplot,histplot,sed_pdfs_plot]
 if os.path.exists(sed_pdfs_plot) & overwrite:
     os.remove(f)
 else:
-    print("output image exists.  exiting")
-    sys.exit()
+    print("making plot")
+
 
 s = sedFunctions.magphys_sed(sed_file,fit_file,effective_wavelengths)
 #s.plot_sed()
