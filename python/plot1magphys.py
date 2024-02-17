@@ -34,6 +34,9 @@ sys.path.append(code_dir)
 import sedFunctions
 # move to data directory
 #os.chdir(data_dir)
+
+effective_wavelengths = np.array([ 0.1516,0.2267,0.48623,0.64606,0.91993,3.40025,4.65201,12.81034,22.37528],'d')
+
 overwrite = True
 os.chdir(data_dir+'/'+galid)
 
@@ -51,8 +54,12 @@ else:
 
 
 files = [sedplot,histplot,sed_pdfs_plot]
-if os.path.exists(sed_pdfs_plot) & overwrite:
-    os.remove(f)
+if os.path.exists(sed_pdfs_plot):
+    if overwrite:
+        os.remove(f)
+    else:
+        print("output found - exiting")
+        sys.exit()
 else:
     print("making plot")
 
