@@ -11,6 +11,8 @@ observations.dat
 
 I will put each galaxy in its own folder, and the parallel program 
 will move to each folder and run this script
+ 
+
 
 time parallel -j+0 --eta ‘cd {} && python $magphys/run1magphys.py' ::: */ 
 
