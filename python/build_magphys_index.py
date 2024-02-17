@@ -124,8 +124,12 @@ class build_html_coadd():
             fit = f"{g}.fit"
             sed = f"{g}.sed"
             collinks = [png,fit,sed]
-            for col in collinks:
-                self.html.write('<td><a href="{}">{}</td>'.format(galdir+'/'+col,col))
+            for i,col in enumerate(collinks):
+                if i == 0:
+                    self.html.write('<td><a href="{0}" target="_blank"><img src="{1}" alt="Missing file {0}" height="auto" width="100%"></a></td>'.format(galdir+'/'+col,galdir+'/'+col))
+                else:
+                    
+                    self.html.write('<td><a href="{}">{}</td>'.format(galdir+'/'+col,col))
 
             self.html.write('</tr>\n')
             galindex += 1
