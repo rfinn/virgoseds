@@ -100,10 +100,7 @@ class build_html_coadd():
         self.html.write('<tr>')
         colnames = ['VFID','PNG','.fit','.sed']
         for i,l in enumerate(colnames):
-            if i == 1:
-                colspan=2
-            else:
-                colspan=1
+            colspan=1
             self.html.write('<th colspan="{}">{}</th>'.format(colspan,l))
         self.html.write('</tr></p>\n')            
 
