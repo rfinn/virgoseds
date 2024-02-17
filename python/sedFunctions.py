@@ -120,7 +120,7 @@ class magphys_sed():
     class to visualize output from magphys
     '''
     
-    def __init__(self,sed_file,fit_file,,wavelengths):
+    def __init__(self,sed_file,fit_file,wavelengths):
         self.sed_file = sed_file#'{}.sed'.format(galid)
         self.fit_file = fit_file#'{}.fit'.format(galid)
         #self.sed_file = '{}.s'.format(galid)
