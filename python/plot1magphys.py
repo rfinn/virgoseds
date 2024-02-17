@@ -56,7 +56,7 @@ else:
 files = [sedplot,histplot,sed_pdfs_plot]
 if os.path.exists(sed_pdfs_plot):
     if overwrite:
-        os.remove(f)
+        os.remove(sed_pdfs_plot)
     else:
         print("output found - exiting")
         sys.exit()
