@@ -39,13 +39,13 @@ sed_file = '{}.sed'.format(galid)
 fit_file = '{}.fit'.format(galid)
 
 if galid.startswith('VFID'):
-    sedplot = '{}-magphys-sed.png'.format(d)
-    histplot = '{}-magphys-pdfs.png'.format(d)
-    sed_pdfs_plot = '{}-magphys-sed-pdfs.png'.format(d)                
+    sedplot = '{}-magphys-sed.png'.format(galid)
+    histplot = '{}-magphys-pdfs.png'.format(galid)
+    sed_pdfs_plot = '{}-magphys-sed-pdfs.png'.format(galid)                
 else:
-    sedplot = 'VFID{}-magphys-sed.png'.format(d)
-    histplot = 'VFID{}-magphys-pdfs.png'.format(d)
-    sed_pdfs_plot = 'VFID{}-magphys-sed-pdfs.png'.format(d)                                
+    sedplot = 'VFID{}-magphys-sed.png'.format(galid)
+    histplot = 'VFID{}-magphys-pdfs.png'.format(galid)
+    sed_pdfs_plot = 'VFID{}-magphys-sed-pdfs.png'.format(galid)                                
 
 
 files = [sedplot,histplot,sed_pdfs_plot]
