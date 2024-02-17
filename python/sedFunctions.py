@@ -115,9 +115,9 @@ class magphys_sed():
     class to visualize output from magphys
     '''
     
-    def __init__(self,galid,wavelengths):
-        self.sed_file = '{}.sed'.format(galid)
-        self.fit_file = '{}.fit'.format(galid)
+    def __init__(self,sed_file,fit_file,,wavelengths):
+        self.sed_file = sed_file#'{}.sed'.format(galid)
+        self.fit_file = fit_file#'{}.fit'.format(galid)
         #self.sed_file = '{}.s'.format(galid)
         #self.fit_file = '{}.f'.format(galid)
         self.lambda_eff = np.array(wavelengths,'d')
@@ -330,15 +330,28 @@ class magphys_sed():
         mu = parse_pdf(fit_lines[62:82])
         tau_V = parse_pdf(fit_lines[85:133])
         sSFR = parse_pdf(fit_lines[136:206])
-        Mstar = parse_pdf(fit_lines[209:269])
-        Ld_tot = parse_pdf(fit_lines[272:332])
-        Tc_ISM = parse_pdf(fit_lines[335:345])
-        Tw_BC = parse_pdf(fit_lines[348:378])
-        xi_C_tot = parse_pdf(fit_lines[381:401])
-        xi_W_tot = parse_pdf(fit_lines[450:470])
-        tau_V_ISM = parse_pdf(fit_lines[473:553])
-        Mdust = parse_pdf(fit_lines[556:616])                
-        SFR = parse_pdf(fit_lines[619:679])
+        
+        #Mstar = parse_pdf(fit_lines[209:269])
+        #Ld_tot = parse_pdf(fit_lines[272:332])
+        #Tc_ISM = parse_pdf(fit_lines[335:345])
+        #Tw_BC = parse_pdf(fit_lines[348:378])
+        #xi_C_tot = parse_pdf(fit_lines[381:401])
+        #xi_W_tot = parse_pdf(fit_lines[450:470])
+        #tau_V_ISM = parse_pdf(fit_lines[473:553])
+        #Mdust = parse_pdf(fit_lines[556:616])                
+        #SFR = parse_pdf(fit_lines[619:679])
+        
+        Mstar = parse_pdf(fit_lines[209:309])
+        Ld_tot = parse_pdf(fit_lines[312:412])
+        Tc_ISM = parse_pdf(fit_lines[415:425])
+        Tw_BC = parse_pdf(fit_lines[428:458])
+        xi_C_tot = parse_pdf(fit_lines[461:481])
+        xi_PAH_tot = parse_pdf(fit_lines[484:504])
+        xi_MIR_tot = parse_pdf(fit_lines[507:527])
+        xi_W_tot = parse_pdf(fit_lines[530:550])
+        tau_V_ISM = parse_pdf(fit_lines[553:633])
+        Mdust = parse_pdf(fit_lines[636:696])                
+        SFR = parse_pdf(fit_lines[699:809])
         in1.close()
 
         #print('fmu_SFR = ',fmu_SFR)

@@ -159,14 +159,18 @@ for d in dirlist:
         continue
     #print('checking directory ',d)
     sedfile = d+'/'+d+'.sed'
-    fitfile = d+'/'+d+'.fit'    
+    fitfile = d+'/'+d+'.fit'
+    #print(d)
     if os.path.exists(sedfile):
         #print('\t found results for ',d)
         lastdir = d
         os.chdir(d)
         nmagphys += 1
         if args.plot:
-            s = sedFunctions.magphys_sed(d,effective_wavelengths)
+            sed_file = '{}.sed'.format(d)
+            fit_file = '{}.fit'.format(d)
+
+            s = sedFunctions.magphys_sed(sed_file,fit_file,effective_wavelengths)
             #s.plot_sed()
             #s.plot_histograms()
             s.plot_sed_pdfs()
@@ -266,58 +270,69 @@ for d in dirlist:
         ssfr_percent.append(np.array(t[1:]))
 
         #Mstar = parse_pdf(fit_lines[209:269])
-        t = parse_percentile(fit_lines[270])        
+        #t = parse_percentile(fit_lines[270])
+        t = parse_percentile(fit_lines[310])                
         mstar_med.append(float(t[0]))
         mstar_percent.append(np.array(t[1:]))
 
         #Ld_tot = parse_pdf(fit_lines[272:332])
-        t = parse_percentile(fit_lines[333])        
+        #t = parse_percentile(fit_lines[333])
+        t = parse_percentile(fit_lines[413])
         Ld_tot_med.append(float(t[0]))
         Ld_tot_percent.append(np.array(t[1:]))
         
         #Tc_ISM = parse_pdf(fit_lines[335:345])
-        t = parse_percentile(fit_lines[346])
+        #t = parse_percentile(fit_lines[346])
+        t = parse_percentile(fit_lines[426])
         Tc_ISM_med.append(float(t[0]))
         Tc_ISM_percent.append(np.array(t[1:]))
 
         
         #Tw_BC = parse_pdf(fit_lines[348:378])
-        t = parse_percentile(fit_lines[379])
+        #t = parse_percentile(fit_lines[379])
+        t = parse_percentile(fit_lines[459])
         Tw_BC_med.append(float(t[0]))
         Tw_BC_percent.append(np.array(t[1:]))
         
         #xi_C_tot = parse_pdf(fit_lines[381:401])
-        t = parse_percentile(fit_lines[402])
+        #t = parse_percentile(fit_lines[402])
+        t = parse_percentile(fit_lines[482])
         xi_C_tot_med.append(float(t[0]))
         xi_C_tot_percent.append(np.array(t[1:]))
 
         # PAH
-        t = parse_percentile(fit_lines[425])
+        #t = parse_percentile(fit_lines[425])
+        t = parse_percentile(fit_lines[505])
         xi_PAH_tot_med.append(float(t[0]))
         xi_PAH_tot_percent.append(np.array(t[1:]))
 
         # MIR - hadn't been tracking these...
-        t = parse_percentile(fit_lines[448])
+        #t = parse_percentile(fit_lines[448])
+        t = parse_percentile(fit_lines[528])
         xi_MIR_tot_med.append(float(t[0]))
         xi_MIR_tot_percent.append(np.array(t[1:]))
         
         #xi_W_tot = parse_pdf(fit_lines[450:470])
-        t = parse_percentile(fit_lines[471])
+        #t = parse_percentile(fit_lines[471])
+        t = parse_percentile(fit_lines[551])
         xi_W_tot_med.append(float(t[0]))
         xi_W_tot_percent.append(np.array(t[1:]))
         
         #tau_V_ISM = parse_pdf(fit_lines[473:553])
-        t = parse_percentile(fit_lines[554])
+        #t = parse_percentile(fit_lines[554])
+        t = parse_percentile(fit_lines[634])
         tau_V_ISM_med.append(float(t[0]))
         tau_V_ISM_percent.append(np.array(t[1:]))
         
         #Mdust = parse_pdf(fit_lines[556:616])                
-        t = parse_percentile(fit_lines[617])
+        #t = parse_percentile(fit_lines[617])
+        t = parse_percentile(fit_lines[697])
         Mdust_med.append(float(t[0]))
         Mdust_percent.append(np.array(t[1:]))
 
         #SFR = parse_pdf(fit_lines[619:679]) 
-        t = parse_percentile(fit_lines[680])
+        #t = parse_percentile(fit_lines[680])
+        t = parse_percentile(fit_lines[810])
         sfr_med.append(float(t[0]))
         sfr_percent.append(np.array(t[1:]))
 
