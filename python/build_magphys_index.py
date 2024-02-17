@@ -139,12 +139,12 @@ if __name__ == '__main__':
     # work through coadd directory
     #global vmain
 
-    VFMAIN_PATH = homedir+'/research/Virgo/tables-north/v2/vf_v2_main.fits'
-    vfmain = fits.getdata(VFMAIN_PATH)
+    #VFMAIN_PATH = homedir+'/research/Virgo/tables-north/v2/vf_v2_main.fits'
+    #vfmain = fits.getdata(VFMAIN_PATH)
     
     #VFFIL_PATH = homedir+'/research/Virgo/tables-north/v2/vf_north_v1_main_filament_membership_allgalaxies.fits'
-    VFFIL_PATH = homedir+'/research/Virgo/tables-north/v2/vf_v2_environment.fits'    
-    vffil = fits.getdata(VFFIL_PATH)
+    #VFFIL_PATH = homedir+'/research/Virgo/tables-north/v2/vf_v2_environment.fits'    
+    #vffil = fits.getdata(VFFIL_PATH)
     
     #outdir = homedir+'/research/Virgo-dev/html-dev/coadds/'
     #outdir = '/data-pool/Halpha/html_dev/coadds/'    
