@@ -101,7 +101,7 @@ class build_html_coadd():
         colnames = ['VFID','PNG','.fit','.sed']
         for i,l in enumerate(colnames):
             colspan=1
-            self.html.write('<th colspan="{}">{}</th>'.format(colspan,l))
+            self.html.write('<th >{}</th>\n'.format(l))
         self.html.write('</tr></p>\n')            
 
         #vfindices = np.arange(len(vfmain))
@@ -112,8 +112,8 @@ class build_html_coadd():
             #print(g)
             jpg_path = os.path.join(self.outdir,'r-coadd.png')
             
-            self.html.write('<tr>')
-            self.html.write('<td>{}</td>'.format(galindex))            
+            self.html.write('<tr>\n')
+            self.html.write('<td>{}</td>\n'.format(galindex))            
             #htmlpage = "{}/{}.html".format(g,g)
             #self.html.write('<td><a href="{}">{}</td>'.format(htmlpage,g.replace('-noback-coadd','')))
             galdir = g
@@ -123,10 +123,10 @@ class build_html_coadd():
             collinks = [png,fit,sed]
             for i,col in enumerate(collinks):
                 if i == 0:
-                    self.html.write('<td><a href="{0}" target="_blank"><img src="{1}" alt="Missing file {0}" height="auto" width="100%"></a></td>'.format(galdir+'/'+col,galdir+'/'+col))
+                    self.html.write('<td><a href="{0}" target="_blank"><img src="{1}" alt="Missing file {0}" height="auto" width="100%"></a></td>\n'.format(galdir+'/'+col,galdir+'/'+col))
                 else:
                     
-                    self.html.write('<td><a href="{}">{}</td>'.format(galdir+'/'+col,col))
+                    self.html.write('<td><a href="{}">{}</td>\n'.format(galdir+'/'+col,col))
 
             self.html.write('</tr>\n')
             galindex += 1
