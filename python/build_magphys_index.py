@@ -119,7 +119,7 @@ class build_html_coadd():
             self.html.write('<td>{}</td>'.format(galindex))            
             #htmlpage = "{}/{}.html".format(g,g)
             #self.html.write('<td><a href="{}">{}</td>'.format(htmlpage,g.replace('-noback-coadd','')))
-            galdir = os.path.join(self.outdir,g)
+            galdir = g
             png = f"VFID{g}-magphys-sed-pdfs.png"
             fit = f"{g}.fit"
             sed = f"{g}.sed"
