@@ -18,7 +18,7 @@ d = 2681 # for VFID2681
 sed_file = '{}.sed'.format(d)
 fit_file = '{}.fit'.format(d)
 
-s = magphys_sed(sed_file,fit_file,all_effective_wavelengths)
+s = magphys_sed(sed_file,fit_file,all_effective_wavelengths,galid=d)
 s.plot_sed()
 s.plot_histograms()
 
@@ -120,7 +120,7 @@ class magphys_sed():
     class to visualize output from magphys
     '''
     
-    def __init__(self,sed_file,fit_file,wavelengths):
+    def __init__(self,sed_file,fit_file,wavelengths,galid=None):
         self.sed_file = sed_file#'{}.sed'.format(galid)
         self.fit_file = fit_file#'{}.fit'.format(galid)
         #self.sed_file = '{}.s'.format(galid)
