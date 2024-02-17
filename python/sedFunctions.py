@@ -13,7 +13,12 @@ From the directory containing the *.sed and *.fit files:
 
 effective_wavelengths = np.array([ 0.1516,0.2267,0.48623,0.64606,0.91993,3.40025,4.65201,12.81034,22.37528],'d')
 %run ~/github/Virgo/programs/sedFunctions.py
-s = magphys_sed('2681',all_effective_wavelengths)
+
+d = 2681 # for VFID2681
+sed_file = '{}.sed'.format(d)
+fit_file = '{}.fit'.format(d)
+
+s = magphys_sed(sed_file,fit_file,all_effective_wavelengths)
 s.plot_sed()
 s.plot_histograms()
 

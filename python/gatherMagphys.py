@@ -9,6 +9,10 @@ GOAL:
   * a file with one line per vf v2 galaxy, with Mstar and SFR for each galaxy 
 
 * the output table is written to ~/research/Virgo/tables-north/v2/
+
+
+
+
 '''
 import os
 import glob
