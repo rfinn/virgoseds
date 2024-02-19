@@ -2,10 +2,11 @@
 
 '''
 GOAL:
-* create index web page that points to html pages for all cutouts 
+* create index web page that displays the pdf for each galaxy and points to .sed and .fit files
 
 USAGE:
-* run from html-dev/cutouts directory
+* run from directory that has subfolders for each galaxy
+
 
 NOTES:
 * using John Moustakas's code as a reference (https://github.com/moustakas/legacyhalos/blob/main/py/legacyhalos/virgofilaments.py#L1131-L1202)
