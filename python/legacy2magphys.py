@@ -152,6 +152,7 @@ for i,f in enumerate(fluxes):
 
 for i,f in enumerate(ivars):
     flag =  ephot[f] > 0
+    ivarsZeroFlag = flag
     err_Jy[:,i][flag] = 1./np.sqrt(ephot[f][flag])*3.631e-6 # convert inverse variance to error, also convert from nanomaggy to Jy
 
     # set error for galaxies with ivar=0 to large value
@@ -252,6 +253,48 @@ print()
 print()
 print()
 
+###########################################################
+# add min uncertainties, as suggested by JM
+# https://github.com/desihub/fastspecfit/blob/main/py/fastspecfit/continuum.py#L904-L912
+#
+#        if min_uncertainty is not None:
+#            log.debug('Propagating minimum photometric uncertainties (mag): [{}]'.format(
+#                ' '.join(min_uncertainty.astype(str))))
+#            good = np.where((maggies != 0) * (ivarmaggies > 0))[0]
+#            if len(good) > 0:
+#                factor = 2.5 / np.log(10.)
+#                magerr = factor / (np.sqrt(ivarmaggies[good]) * maggies[good])
+#                magerr2 = magerr**2 + min_uncertainty[good]**2
+#                ivarmaggies[good] = factor**2 / (maggies[good]**2 * magerr2)
+#
+# From JM
+# Yes, I always recommend minimum photometric errors. For my DESI stuff
+# (which uses Tractor photometry), I assume 2% in grz and 5% in W1-W4,
+# but you could probably bump that even higher without too much
+# justification.
+
+# In case it's helpful, here's some code to add these minimum floors in
+# quadrature with the formal uncertainties--
+# https://github.com/desihub/fastspecfit/blob/main/py/fastspecfit/continuum.py#L904-L912
+
+###########################################################
+
+floorUncertainty = True
+if floorUncertainty:
+
+    for i,f in enumerate(filters):
+        for f in ['FUV','NUV','W1','W2','W3','W4']:
+            # add 5% error for galex and wise
+            phot_err = flux_Jy[:,i]*.05
+
+        else:
+            # add 2% for grz
+            phot_err = flux_Jy[:,i]*.02        
+
+        flag =  invsZeroFlag
+        err_Jy[:,i][flag] = np.sqrt(err_Jy[:,i][flag]**2 + phot_err**2) # convert inverse variance to error, also convert from nanomaggy to Jy
+
+
 
 
 scaleFluxes = False
@@ -334,7 +377,8 @@ if scaleFluxes:
 else:
     scaled_flux_Jy = flux_Jy
     scaled_err_Jy = err_Jy
-        
+
+
 
 ###########################################################
 ## read in vf_main so we can get redshift for each galaxy
@@ -372,6 +416,10 @@ for i in range(len(ephot)):
     redshift[i] = vfmain['vr'][vfindex]/3.e5 # divide by speed of light to convert recession velocity to redshift
 
 
+
+
+
+
 ###########################################################
 # create output table
 # ID redshift flux_0 flux_0_err flux_1 flux_1_err ...
@@ -402,6 +450,9 @@ for i in range(len(filters)):
     else:
         output_columns.append(scaled_flux_Jy[:,i])
         output_columns.append(scaled_err_Jy[:,i])
+
+
+
 
 #print(len(output_columns))
 colnames = ['#VFID','redshift']
