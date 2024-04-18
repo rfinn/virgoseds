@@ -36,7 +36,8 @@ def parse_percentile(line):
     '''split percentile line, return med and 68% conf interval  ''' 
     t = line.split()
     #print(t)
-    return float(t[3]),float(t[1]),float(t[4])
+    #return float(t[3]),float(t[1]),float(t[4])
+    return float(t[2]),float(t[1]),float(t[3])
 
 
 ###################################################################
