@@ -290,11 +290,15 @@ if floorUncertainty:
     for i,f in enumerate(filters):
         if f in ['FUV','NUV','W1','W2','W3','W4']:
             # add 5% error for galex and wise
-            phot_err = flux_Jy[:,i]*.05
+            # 2024-04-24 - increasing errors based on input from Elisabete
+            # making min error 10%
+            #phot_err = flux_Jy[:,i]*.05
+            phot_err = flux_Jy[:,i]*.13
 
         else:
             # add 2% for grz
-            phot_err = flux_Jy[:,i]*.02        
+            #phot_err = flux_Jy[:,i]*.02
+            phot_err = flux_Jy[:,i]*.1
 
 
         flag =  flux_Jy[:,i] > 0
