@@ -29,6 +29,7 @@ parser = argparse.ArgumentParser(description ='Program to set up directories for
 #parser.add_argument('--sbmag', dest = 'sbmag', default = 24, help = 'sb to fit.  default is 24, as this has the highest fraction of non-zero entries.  The options are [22,26] in increments of 0.5.')
 parser.add_argument('--ext', dest = 'ext', default = 0, help = 'extinction correction to apply.  0=None; 1=Legacy Survey; 2=Salim/Leroy.  Default is zero. The main difference between 1 and 2 is how the GALEX fluxes are handled.  See Leroy+2019 and Salim+2016 for more details.')
 parser.add_argument('--nozband', dest = 'nozband', default = False,action='store_true', help = 'do not use z-band in sed fits.  Default is false. usually you will not adjust this.  adding option for testing to see if this is the root of the systematic difference in magphys results between N and S samples.')
+parser.add_argument('--nogalex', dest = 'nogalex', default = False,action='store_true', help = 'do not use galex data.  Default is false. If this is set, the galex errors will be set to very large values so that they will not affect the fit but they will be passed through for comparison with the best-fit model.')
 
 
 args = parser.parse_args()
@@ -72,6 +73,8 @@ else:
     Nfilters = os.path.join(legdir,'legacyFiltersN-nozband.dat')
     Sfilters = os.path.join(legdir,'legacyFiltersS-nozband.dat')
 
+if args.nogalex:
+    outdir = outdir.replace('output','output-nogalex')
 
 Nphot = os.path.join(legdir,f'magphysInputN{file_suffix}.dat')
 Sphot = os.path.join(legdir,f'magphysInputS{file_suffix}.dat')
@@ -115,7 +118,16 @@ for line in infile:
                 os.mkdir(pdir)
             outfile = open(pdir+'/observations.dat','w')
             outfile.write(header)
-            outfile.write(line.replace("VFID",""))
+            outline = line.replace("VFID","")
+            if args.nogalex:
+                # set galex errors to be large
+                t = outline.split()
+                # 0    1        2   3       4   5
+                # VFID redshift FUV FUV_err NUV NUV_err G G_err R R_err Z Z_err W1 W1_err W2 W2_err W3 W3_err W4 W4_err
+                t[3] = str(1.e3)
+                t[5] = str(1.e3)
+                outline = " ".join(t)
+            outfile.write(outline)
             outfile.close()
             i += 1
 
