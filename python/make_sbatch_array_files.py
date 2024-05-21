@@ -89,6 +89,7 @@ import argparse
 parser = argparse.ArgumentParser(description ='Program to create bash script to run magphys in parallel.  This uses the array option in slurm so that the processes are associated with the same process id, rather than submitting a bunch of individual jobs.  The script can be submitted by setting the --submit flag.')
 parser.add_argument('--ext', dest = 'ext', default = 0, help = 'extinction correction to apply.  0=None; 1=Legacy Survey; 2=Salim/Leroy. Default is zero. The main difference between 1 and 2 is how the GALEX fluxes are handled.  See Leroy+2019 and Salim+2016 for more details.')
 parser.add_argument('--nozband', dest = 'nozband', default = False,action='store_true', help = 'do not use z-band in sed fits.  Default is false. usually you will not adjust this.  adding option for testing to see if this is the root of the systematic difference in magphys results between N and S samples.')
+parser.add_argument('--nogalex', dest = 'nogalex', default = False,action='store_true', help = 'do not use galex data.  Default is false. If this is set, the galex errors will be set to very large values so that they will not affect the fit but they will be passed through for comparison with the best-fit model.')
 parser.add_argument('--submit', dest = 'submit', default = False, action='store_true',help = 'Set this option to submit the script to slurm. Default is false. You can check output JOB_{scriptid}.sh.  If everything looks good, then add submit flag.')
 args = parser.parse_args()
 
@@ -116,7 +117,10 @@ elif args.nozband:
         script_id = "VFIDall-nozband-legacyExt"
     if int(args.ext) == 2:
         data_dir = f"{HOME}/research/Virgo/magphysParallel/output-nozband-salimExt/"
-        script_id = "VFIDall-nozband-salimExt"    
+        script_id = "VFIDall-nozband-salimExt"
+if args.nogalex:
+    data_dir = data_dir.replace("output","output-nogalex")
+    script_id = script_id.replace("VFIDall","VFIDall-nogalex")
 print('data_dir = ',data_dir)
 print()
 print('script_id = ',script_id)
