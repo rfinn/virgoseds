@@ -143,6 +143,7 @@ ephot1 = Table(mef_table['PARENT'].data) # this one has RA and DEC, which we nee
 mef_table.close()
 
 # convert fluxes from nmgy to Jy
+# John's tables are not as long as the full vf_v2 tables
 flux_Jy = np.zeros((len(ephot),len(filters)),'d')
 err_Jy = np.zeros((len(ephot),len(filters)),'d')
 
@@ -150,8 +151,12 @@ err_Jy = np.zeros((len(ephot),len(filters)),'d')
 for i,f in enumerate(fluxes):
     flux_Jy[:,i] = ephot[f]*3.631e-6 # convert from nanomaggy to Jy
 
+    
+print("\ntesting: first row of fluxes = ",flux_Jy[0],"\n")
+print("\ntesting: first row of err_fluxes = ",err_Jy[0],"\n")
 for i,f in enumerate(ivars):
     flag =  ephot[f] > 0
+    ivarsZeroFlag = flag
     err_Jy[:,i][flag] = 1./np.sqrt(ephot[f][flag])*3.631e-6 # convert inverse variance to error, also convert from nanomaggy to Jy
 
     # set error for galaxies with ivar=0 to large value
@@ -244,7 +249,8 @@ for i in zeroIndices:
             nbadR += 1
 
 
-        
+print("\ntesting 2: first row of fluxes = ",flux_Jy[0],"\n")
+print("\ntesting 2: first row of err_fluxes = ",err_Jy[0],"\n")        
 print()
 print('total number with no valid R-band flux as input = {}'.format(nbadR))
 print()
@@ -252,7 +258,62 @@ print()
 print()
 print()
 
+###########################################################
+# add min uncertainties, as suggested by JM
+# https://github.com/desihub/fastspecfit/blob/main/py/fastspecfit/continuum.py#L904-L912
+#
+#        if min_uncertainty is not None:
+#            log.debug('Propagating minimum photometric uncertainties (mag): [{}]'.format(
+#                ' '.join(min_uncertainty.astype(str))))
+#            good = np.where((maggies != 0) * (ivarmaggies > 0))[0]
+#            if len(good) > 0:
+#                factor = 2.5 / np.log(10.)
+#                magerr = factor / (np.sqrt(ivarmaggies[good]) * maggies[good])
+#                magerr2 = magerr**2 + min_uncertainty[good]**2
+#                ivarmaggies[good] = factor**2 / (maggies[good]**2 * magerr2)
+#
+# From JM
+# Yes, I always recommend minimum photometric errors. For my DESI stuff
+# (which uses Tractor photometry), I assume 2% in grz and 5% in W1-W4,
+# but you could probably bump that even higher without too much
+# justification.
 
+# In case it's helpful, here's some code to add these minimum floors in
+# quadrature with the formal uncertainties--
+# https://github.com/desihub/fastspecfit/blob/main/py/fastspecfit/continuum.py#L904-L912
+
+###########################################################
+
+floorUncertainty = True
+if floorUncertainty:
+    print("\nAdding a floor to the photometric uncertainties\n")
+    for i,f in enumerate(filters):
+        if f in ['FUV','NUV','W1','W2','W3','W4']:
+            # add 5% error for galex and wise
+            # 2024-04-24 - increasing errors based on input from Elisabete
+            # making min error 10%
+            #phot_err = flux_Jy[:,i]*.05
+            phot_err = flux_Jy[:,i]*.13
+
+        else:
+            # add 2% for grz
+            #phot_err = flux_Jy[:,i]*.02
+            phot_err = flux_Jy[:,i]*.1
+
+
+        flag =  flux_Jy[:,i] > 0
+
+        
+        # combine formal photometric error with the floor estimate of systematic uncertainty
+        err_Jy[:,i][flag] = np.sqrt(err_Jy[:,i][flag]**2 + phot_err[flag]**2)
+        print(f)
+        if f == 'FUV':
+            print("FUV, err_Jy[0,i] = ",err_Jy[0,i])
+        #err_Jy[:,i][~flag] = phot_err[~flag]
+
+
+print("\ntesting 3: first row of fluxes = ",flux_Jy[0],"\n")
+print("\ntesting 3: first row of fluxes = ",err_Jy[0],"\n")
 
 scaleFluxes = False
 
@@ -334,7 +395,10 @@ if scaleFluxes:
 else:
     scaled_flux_Jy = flux_Jy
     scaled_err_Jy = err_Jy
-        
+
+
+print("\ntesting 4: first row of scaled_fluxes = ",scaled_flux_Jy[0],"\n")
+print("\ntesting 4: first row of scaled_err_fluxes = ",scaled_err_Jy[0],"\n")
 
 ###########################################################
 ## read in vf_main so we can get redshift for each galaxy
@@ -357,19 +421,28 @@ vfmain = Table.read(vffile)
 
 
 # use this file to get the E(B-V) values
+# NOTE : John's photometry files are not line-matched to the vf_v2 tables
 vffile = '/home/rfinn/research/Virgo/tables-north/v2/vf_v2_extinction.fits'
 vfext = Table.read(vffile) 
 
 # store redshift of each galaxy
 redshift = np.zeros(len(ephot),'d')
 redshift_flag = np.ones(len(ephot),'bool')
+JM_vfid = []
+
 for i in range(len(ephot)):
     #print(ephot['VF_ID'][i])
     vfindex = np.arange(len(vfmain))[vfmain['VFID'] == 'VFID{:04d}'.format(ephot['VF_ID'][i])]
+    JM_vfid.append(vfindex)
+
     #print(vfindex)
     #print(ephot['VF_ID'][i],vfindex)
     #if len(vfindex) == 0:
     redshift[i] = vfmain['vr'][vfindex]/3.e5 # divide by speed of light to convert recession velocity to redshift
+
+
+
+
 
 
 ###########################################################
@@ -382,7 +455,12 @@ for i in range(len(ephot)):
 # NEED TO UPDATE TO ALLOW FOR SALIM TREATMENT OF EXTINCTION
 # this will allow us to compare with Leroy+2019 values
 ###########################################################
+
+# JM's ephot table is not line-matched to the vf_v2 tables
+# but I matched on this above
 output_columns = [ephot1['VFID'],redshift]
+
+# this is wrong - need to loop over each galaxy to get its extinction value
 for i in range(len(filters)):
 
     # check to see if extinction correction should be applied
@@ -395,13 +473,19 @@ for i in range(len(filters)):
         else:
             print('Extinction selection is not valid.  Needs to be [0,1,2] for [none,legacy,salim]')
             sys.exit()
+            
         # convert magnitudes of extinction into a linear scale factor
-        extcorr = 10.**(vfext[ecolname]/2.5)
-        output_columns.append(scaled_flux_Jy[:,i]*extcorr[vfindex])
-        output_columns.append(scaled_err_Jy[:,i]*extcorr[vfindex])
+        extcorr = 10.**(vfext[ecolname]/2.5) # full vf_v2 table
+        JM_extcorr = extcorr[ephot['VF_ID']]
+        output_columns.append(scaled_flux_Jy[:,i]*JM_extcorr)
+        output_columns.append(scaled_err_Jy[:,i]*JM_extcorr)
     else:
         output_columns.append(scaled_flux_Jy[:,i])
         output_columns.append(scaled_err_Jy[:,i])
+
+    print("\ntesting 5: first row scaled_flux = ",scaled_flux_Jy[0],"\n")
+    print("\ntesting 5: first row scaled_flux = ",scaled_err_Jy[0],"\n")    
+
 
 #print(len(output_columns))
 colnames = ['#VFID','redshift']
@@ -409,7 +493,9 @@ for i in range(len(filters)):
     colnames.append(filters[i])
     colnames.append('{}_err'.format(filters[i]))
 
-out_table = Table(output_columns)#,names=colnames)
+out_table = Table(output_columns,names=colnames)
+
+print("\ntesting 3: first row of Table = ",out_table[0],"\n")
 
 # define north flag to separate grz filters from DES vs BASS+MzLS
 north_flag = ephot1['DEC'] >= 32.375
